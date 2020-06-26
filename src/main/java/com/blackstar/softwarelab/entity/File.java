@@ -27,7 +27,7 @@ public class File implements Serializable {
 
     private String type;
 
-    private String data;
+    private byte[] data;
 
     private LocalDateTime createTime;
 

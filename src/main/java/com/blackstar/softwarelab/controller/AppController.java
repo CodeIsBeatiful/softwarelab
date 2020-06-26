@@ -12,8 +12,6 @@ import com.blackstar.softwarelab.service.IAppService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletResponse;
-
 /**
  * <p>
  * 前端控制器
@@ -73,21 +71,7 @@ public class AppController extends BaseController {
     }
 
 
-    @RequestMapping(value = "/logo/{id}")
-    public void getImage(@PathVariable("id") String id, HttpServletResponse response) throws Exception{
-        //TODO logo不能入主表，直接存储磁盘
-//        App app = appService.getById(id);
-//        byte[] logo = app.getLogo();
-//        if(logo == null){
-//            return;
-//        }
-//        response.setContentType(MediaType.IMAGE_PNG_VALUE);
-//        response.setContentLength(logo.length);
-//        ServletOutputStream outputStream = response.getOutputStream();
-//        outputStream.write(logo);
-//        outputStream.flush();
-//        outputStream.close();
-    }
+
 
 
 }
