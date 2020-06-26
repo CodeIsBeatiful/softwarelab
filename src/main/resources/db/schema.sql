@@ -51,15 +51,4 @@ alter table public.app owner to postgres;
 
 
 
-create table public.favorites
-(
-    id varchar(36) not null
-        constraint favorites_pk
-            primary key,
-    user_id varchar(36),
-    app_id varchar(36),
-    additional_info varchar
-);
-
-alter table public.favorites owner to postgres;
 
