@@ -1,8 +1,8 @@
 package com.blackstar.softwarelab.common;
 
 import com.blackstar.softwarelab.security.SecurityUser;
-import com.blackstar.softwarelab.user.entity.SysUser;
-import com.blackstar.softwarelab.user.service.ISysUserService;
+import com.blackstar.softwarelab.entity.SysUser;
+import com.blackstar.softwarelab.service.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class BaseController {

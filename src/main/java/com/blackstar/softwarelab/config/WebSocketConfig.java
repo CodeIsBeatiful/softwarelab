@@ -1,8 +1,7 @@
 package com.blackstar.softwarelab.config;
 
 import com.blackstar.softwarelab.security.SecurityUser;
-import com.blackstar.softwarelab.user.entity.SysUser;
-import com.blackstar.softwarelab.user.service.ISysUserService;
+import com.blackstar.softwarelab.service.ISysUserService;
 import com.blackstar.softwarelab.websocket.SlWebSocketHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
