@@ -1,17 +1,11 @@
 package com.blackstar.softwarelab.user.controller;
 
+import com.blackstar.softwarelab.AbstractBaseTest;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
-
-import static org.junit.Assert.*;
-@RunWith(SpringRunner.class)
-@SpringBootTest
 @Transactional
-public class UserControllerTest {
+public class UserControllerTest extends AbstractBaseTest {
 
     @Before
     public void setUp() throws Exception {
@@ -22,4 +16,6 @@ public class UserControllerTest {
     public void testSave(){
 
     }
+
+
 }

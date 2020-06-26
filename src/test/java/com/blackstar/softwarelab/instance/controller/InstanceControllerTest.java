@@ -1,20 +1,17 @@
 package com.blackstar.softwarelab.instance.controller;
 
+import com.blackstar.softwarelab.AbstractBaseTest;
 import com.blackstar.softwarelab.instance.entity.Instance;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
+
 @Transactional
-public class InstanceControllerTest {
+public class InstanceControllerTest extends AbstractBaseTest {
 
 
 

@@ -1,13 +1,11 @@
 package com.blackstar.softwarelab.app.service.impl;
 
+import com.blackstar.softwarelab.app.controller.AppControllerTest;
 import com.blackstar.softwarelab.instance.bean.ContainerInfo;
 import com.blackstar.softwarelab.instance.service.impl.DockerServiceImpl;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -19,9 +17,8 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-public class DockerServiceImplTest {
+
+public class DockerServiceImplTest extends AppControllerTest {
 
 
     @Autowired
