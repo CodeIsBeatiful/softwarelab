@@ -10,11 +10,7 @@ import com.blackstar.softwarelab.entity.Instance;
 import com.blackstar.softwarelab.security.SecurityUser;
 import com.blackstar.softwarelab.service.IInstanceService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * <p>
@@ -24,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @author blackstar
  * @since 2020-03-27
  */
-@Controller
+@RestController
 @RequestMapping("/api/instances")
 public class InstanceController extends BaseController {
 

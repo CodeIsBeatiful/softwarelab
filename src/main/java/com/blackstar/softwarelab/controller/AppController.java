@@ -5,16 +5,12 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.blackstar.softwarelab.entity.App;
-import com.blackstar.softwarelab.service.IAppService;
 import com.blackstar.softwarelab.common.BaseController;
 import com.blackstar.softwarelab.common.DbConst;
+import com.blackstar.softwarelab.entity.App;
+import com.blackstar.softwarelab.service.IAppService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -26,7 +22,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author blackstar
  * @since 2020-03-27
  */
-@Controller
+@RestController
 @RequestMapping("/api/apps")
 public class AppController extends BaseController {
 
