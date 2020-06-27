@@ -11,6 +11,36 @@ CREATE TABLE IF NOT EXISTS sys_user
     status      integer
 );
 
+
+CREATE TABLE IF NOT EXISTS app
+(
+    name            varchar(100) not null
+        constraint app_pk
+            primary key,
+    author          varchar(36),
+    type            varchar(50),
+    description     text,
+    create_time     timestamp,
+    update_time     timestamp,
+    status          integer,
+    additional_info varchar,
+    logo            bytea,
+    logo_type       varchar(10)
+);
+
+
+CREATE TABLE IF NOT EXISTS app_version
+(
+    app_name        varchar(50) not null,
+    version         varchar(50) not null,
+    additional_info varchar,
+    create_time     timestamp,
+    update_time     timestamp,
+    status          integer,
+    constraint app_version_pk
+        primary key (app_name, version)
+);
+
 CREATE TABLE IF NOT EXISTS instance
 (
     id              varchar(36) not null
@@ -26,23 +56,6 @@ CREATE TABLE IF NOT EXISTS instance
     additional_info varchar
 );
 
-
-CREATE TABLE IF NOT EXISTS app
-(
-    id              varchar(36) not null
-        constraint app_pk
-            primary key,
-    author          varchar(36),
-    type            varchar(50),
-    name            varchar(100),
-    description     text,
-    create_time     timestamp,
-    update_time     timestamp,
-    status          integer,
-    additional_info varchar,
-    logo            bytea,
-    logo_type       varchar(10)
-);
 
 
 CREATE TABLE IF NOT EXISTS file

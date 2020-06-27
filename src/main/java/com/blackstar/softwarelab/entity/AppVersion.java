@@ -4,8 +4,7 @@ import java.time.LocalDateTime;
 import java.io.Serializable;
 
 import com.baomidou.mybatisplus.annotation.TableId;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 /**
@@ -14,31 +13,31 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author blackstar
- * @since 2020-03-28
+ * @since 2020-06-27
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Accessors(chain = true)
-public class App implements Serializable {
+public class AppVersion implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @TableId
-    private String name;
+    private String appName;
 
-    private String author;
+    @TableId
+    private String version;
 
-    private String type;
-
-    private String description;
+    private String additionalInfo;
 
     private LocalDateTime createTime;
 
     private LocalDateTime updateTime;
 
     private Integer status;
-
-    private String additionalInfo;
 
 
 }

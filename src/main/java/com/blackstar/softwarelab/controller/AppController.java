@@ -8,9 +8,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.blackstar.softwarelab.common.BaseController;
 import com.blackstar.softwarelab.common.DbConst;
 import com.blackstar.softwarelab.entity.App;
+import com.blackstar.softwarelab.entity.AppVersion;
 import com.blackstar.softwarelab.service.IAppService;
+import com.blackstar.softwarelab.service.IAppVersionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * <p>
@@ -28,9 +32,12 @@ public class AppController extends BaseController {
     @Autowired
     private IAppService appService;
 
-    @RequestMapping(method = RequestMethod.GET, value = "/{id}")
-    public App get(@PathVariable String id) {
-        return appService.getById(id);
+    @Autowired
+    private IAppVersionService appVersionService;
+
+    @RequestMapping(method = RequestMethod.GET, value = "/{name}")
+    public App get(@PathVariable String name) {
+        return appService.getById(name);
     }
 
     @RequestMapping(method = RequestMethod.POST)
@@ -42,20 +49,21 @@ public class AppController extends BaseController {
     @RequestMapping(method = RequestMethod.PUT)
     public App update(App app) {
         appService.updateById(app);
-        return appService.getById(app.getId());
+        return appService.getById(app.getName());
     }
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
-    public boolean remove(@PathVariable String id) {
-        App app = new App();
-        app.setId(id);
-        UpdateWrapper<App> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.set(DbConst.COLUMN_STATUS, DbConst.STATUS_DELETE);
-        return appService.update(app,updateWrapper);
+    @RequestMapping(method = RequestMethod.DELETE, value = "/{name}")
+    public boolean remove(@PathVariable String name) {
+//        App app = new App();
+//        app.setId(id);
+//        UpdateWrapper<App> updateWrapper = new UpdateWrapper<>();
+//        updateWrapper.set(DbConst.COLUMN_STATUS, DbConst.STATUS_DELETE);
+//        return appService.update(app,updateWrapper);
+        return false;
     }
 
-    public boolean delete(@PathVariable String id){
-        return appService.removeById(id);
+    public boolean delete(@PathVariable String name) {
+        return appService.removeById(name);
     }
 
 
@@ -71,7 +79,18 @@ public class AppController extends BaseController {
     }
 
 
+    @RequestMapping(method = RequestMethod.GET, value = "/{name}/{version}")
+    public AppVersion getVersion(@PathVariable String name, @PathVariable String version) {
+        return appVersionService.getOne(new QueryWrapper<AppVersion>().setEntity(new AppVersion().setAppName(name).setVersion(version)));
+    }
 
+    public AppVersion getVersions() {
+        // TODO
+        return null;
+    }
 
-
+    public AppVersion addVersion(AppVersion appVersion) {
+        appVersionService.save(appVersion);
+        return appVersion;
+    }
 }

@@ -138,7 +138,7 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
             }
             containerInfo = objectMapper.readValue(instance.getAdditionalInfo(), ContainerInfo.class);
             //sys labels
-            List<String> sysLabels = Arrays.asList("instanceId:" + instance.getId(), "appId:" + app.getId(), "userId:" + user.getId());
+            List<String> sysLabels = Arrays.asList("instanceId:" + instance.getId(), "appId:" + app.getName(), "userId:" + user.getId());
             sysLabels.addAll(containerInfo.getLabels());
             ContainerInfo.builder()
                     .imageName(containerSetting.getImageName())
