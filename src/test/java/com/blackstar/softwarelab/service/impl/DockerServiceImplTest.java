@@ -1,6 +1,6 @@
 package com.blackstar.softwarelab.service.impl;
 
-import com.blackstar.softwarelab.controller.AppControllerTest;
+import com.blackstar.softwarelab.AbstractBaseTest;
 import com.blackstar.softwarelab.bean.ContainerInfo;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +17,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 
-public class DockerServiceImplTest extends AppControllerTest {
+public class DockerServiceImplTest extends AbstractBaseTest {
 
 
     @Autowired
