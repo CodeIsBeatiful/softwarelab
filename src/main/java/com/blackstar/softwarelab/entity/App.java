@@ -10,7 +10,7 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author blackstar
@@ -32,13 +32,14 @@ public class App implements Serializable {
 
     private String description;
 
+    private String imagePath;
+
+    private String additionalInfo;
+
     private LocalDateTime createTime;
 
     private LocalDateTime updateTime;
 
     private Integer status;
-
-    private String additionalInfo;
-
 
 }

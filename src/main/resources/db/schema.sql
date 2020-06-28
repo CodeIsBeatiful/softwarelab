@@ -23,9 +23,8 @@ CREATE TABLE IF NOT EXISTS app
     create_time     timestamp,
     update_time     timestamp,
     status          integer,
-    additional_info varchar,
-    logo            bytea,
-    logo_type       varchar(10)
+    image_path             varchar(100),
+    additional_info varchar
 );
 
 
