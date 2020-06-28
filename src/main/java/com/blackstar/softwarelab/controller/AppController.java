@@ -2,7 +2,6 @@ package com.blackstar.softwarelab.controller;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.blackstar.softwarelab.common.BaseController;
@@ -40,19 +39,19 @@ public class AppController extends BaseController {
         return appService.getById(name);
     }
 
-    @RequestMapping(method = RequestMethod.POST)
+//    @RequestMapping(method = RequestMethod.POST)
     public App add(App app) {
         appService.save(app);
         return app;
     }
 
-    @RequestMapping(method = RequestMethod.PUT)
+//    @RequestMapping(method = RequestMethod.PUT)
     public App update(App app) {
         appService.updateById(app);
         return appService.getById(app.getName());
     }
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "/{name}")
+//    @RequestMapping(method = RequestMethod.DELETE, value = "/{name}")
     public boolean remove(@PathVariable String name) {
 //        App app = new App();
 //        app.setId(id);
@@ -72,21 +71,31 @@ public class AppController extends BaseController {
 
         Page<App> appPage = new Page<>(pageNum, pageSize);
 
-        QueryWrapper<App> appQueryWrapper = new QueryWrapper<>();
-        appQueryWrapper.eq(DbConst.COLUMN_STATUS, DbConst.STATUS_NORMAL);
+        QueryWrapper<App> appQueryWrapper = new QueryWrapper<App>().eq(DbConst.COLUMN_STATUS, DbConst.STATUS_NORMAL);
 
         return appService.page(appPage, appQueryWrapper);
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "?condition=type")
+    public IPage<App> listByType(@RequestParam String type, @RequestParam int pageNum, @RequestParam int pageSize) {
+        Page<App> appPage = new Page<>(pageNum, pageSize);
+        QueryWrapper<App> appQueryWrapper = new QueryWrapper<App>()
+                .eq(DbConst.COLUMN_TYPE, type)
+                .eq(DbConst.COLUMN_STATUS, DbConst.STATUS_NORMAL);
+        return appService.page(appPage, appQueryWrapper);
+    }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/{name}/{version}")
+
+
+
+    @RequestMapping(method = RequestMethod.GET, value = "/{name}/versions/{version}")
     public AppVersion getVersion(@PathVariable String name, @PathVariable String version) {
         return appVersionService.getOne(new QueryWrapper<AppVersion>().setEntity(new AppVersion().setAppName(name).setVersion(version)));
     }
 
-    public AppVersion getVersions() {
-        // TODO
-        return null;
+    @RequestMapping(method = RequestMethod.GET, value = "/{name}/versions")
+    public List<AppVersion> getVersions(@PathVariable String name) {
+        return appVersionService.list(new QueryWrapper<AppVersion>().setEntity(new AppVersion().setAppName(name)));
     }
 
     public AppVersion addVersion(AppVersion appVersion) {

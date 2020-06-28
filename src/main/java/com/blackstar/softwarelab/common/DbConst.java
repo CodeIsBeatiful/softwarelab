@@ -11,6 +11,8 @@ public class DbConst {
 
     public static final String COLUMN_STATUS="status";
 
+    public static final String COLUMN_TYPE="type";
+
     public static final String COLUMN_ADDITIONAL_INFO = "additional_info";
 
 
