@@ -17,6 +17,7 @@ import com.blackstar.softwarelab.service.ISysUserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -45,6 +46,9 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
 
     @Autowired
     private IAppService appService;
+
+    @Value("${instance.ports}")
+    private String ports;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -130,6 +134,7 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
     }
 
     private ContainerInfo generateContainerInfo(App app, SysUser user, Instance instance) {
+        //TODO need to review
         ContainerInfo containerInfo = null;
         try {
             ContainerSetting containerSetting = objectMapper.readValue(app.getAdditionalInfo(), ContainerSetting.class);
@@ -138,7 +143,7 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
             }
             containerInfo = objectMapper.readValue(instance.getAdditionalInfo(), ContainerInfo.class);
             //sys labels
-            List<String> sysLabels = Arrays.asList("instanceId:" + instance.getId(), "appId:" + app.getName(), "userId:" + user.getId());
+            List<String> sysLabels = Arrays.asList("appName:" + app.getName(), "userId:" + user.getId(), "instanceId:" + instance.getId());
             sysLabels.addAll(containerInfo.getLabels());
             ContainerInfo.builder()
                     .imageName(containerSetting.getImageName())

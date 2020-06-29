@@ -12,3 +12,8 @@ spring:
 user:
   admin:
     id: 205635b9-ab37-43cb-82c2-811a58880fa1
+
+
+
+instance:
+  ports: 30001-39999

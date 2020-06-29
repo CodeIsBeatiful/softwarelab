@@ -11,7 +11,6 @@ import com.blackstar.softwarelab.entity.SysUser;
 import com.blackstar.softwarelab.service.ISysUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -51,7 +50,7 @@ public class UserController extends BaseController {
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
     public boolean remove(@PathVariable String id) {
-        if(adminId.equals(id)){
+        if(!adminId.equals(id)){
             return false;
         }
         SysUser user = new SysUser();
@@ -62,7 +61,7 @@ public class UserController extends BaseController {
     }
 
     public boolean delete(@PathVariable String id){
-        if(adminId.equals(id)){
+        if(!adminId.equals(id)){
             return false;
         }
         return userService.removeById(id);
