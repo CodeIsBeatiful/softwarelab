@@ -10,10 +10,7 @@ import com.blackstar.softwarelab.entity.Instance;
 import com.blackstar.softwarelab.entity.SysUser;
 import com.blackstar.softwarelab.mapper.InstanceMapper;
 import com.blackstar.softwarelab.security.SecurityUser;
-import com.blackstar.softwarelab.service.ContainerService;
-import com.blackstar.softwarelab.service.IAppService;
-import com.blackstar.softwarelab.service.IInstanceService;
-import com.blackstar.softwarelab.service.ISysUserService;
+import com.blackstar.softwarelab.service.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,16 +56,16 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
             throw new RuntimeException("can't find instance info by instance");
         }
         String additionalInfo = instance.getAdditionalInfo();
-        if(additionalInfo == null){
+        if (additionalInfo == null) {
             throw new RuntimeException("can't find container info by instance");
-        }else{
+        } else {
             try {
                 ContainerInfo containerInfo = objectMapper.readValue(additionalInfo, ContainerInfo.class);
                 UpdateWrapper<Instance> updateWrapper = new UpdateWrapper<>();
-                updateWrapper.set(DbConst.COLUMN_ADDITIONAL_INFO,objectMapper.writeValueAsString(containerService.start(containerInfo)));
-                return this.update(instance,updateWrapper);
+                updateWrapper.set(DbConst.COLUMN_ADDITIONAL_INFO, objectMapper.writeValueAsString(containerService.start(containerInfo)));
+                return this.update(instance, updateWrapper);
             } catch (IOException e) {
-                throw new RuntimeException("instance start error",e);
+                throw new RuntimeException("instance start error", e);
             }
         }
 
@@ -81,7 +78,7 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
             throw new RuntimeException("can't find instance by id");
         }
         ContainerInfo containerInfo = getContainerInfo(instance);
-        if(containerInfo == null){
+        if (containerInfo == null) {
             throw new RuntimeException("container info is null");
         }
         containerService.stop(containerInfo);
@@ -89,11 +86,10 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
     }
 
 
-
     @Override
-    public void add(String userId,Instance instance) {
+    public void add(String userId, Instance instance) {
         SysUser user = userService.getById(userId);
-        App app = appService.getById(instance.getAppId());
+        App app = appService.getById(instance.getAppName());
         instance.setId(UUID.randomUUID().toString());
         ContainerInfo containerInfo = generateContainerInfo(app, user, instance);
         try {
@@ -117,12 +113,12 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
         containerService.remove(containerInfo);
         UpdateWrapper<Instance> updateWrapper = new UpdateWrapper<>();
         updateWrapper.set(DbConst.COLUMN_STATUS, DbConst.STATUS_DELETE);
-        return this.update(instance,updateWrapper);
+        return this.update(instance, updateWrapper);
     }
 
-    private ContainerInfo getContainerInfo(Instance instance){
+    private ContainerInfo getContainerInfo(Instance instance) {
         String additionalInfo = instance.getAdditionalInfo();
-        if(additionalInfo == null){
+        if (additionalInfo == null) {
             return null;
         }
         try {
@@ -134,20 +130,19 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
     }
 
     private ContainerInfo generateContainerInfo(App app, SysUser user, Instance instance) {
-        //TODO need to review
         ContainerInfo containerInfo = null;
         try {
             ContainerSetting containerSetting = objectMapper.readValue(app.getAdditionalInfo(), ContainerSetting.class);
-            if(containerSetting == null){
+            if (containerSetting == null) {
                 return null;
             }
             containerInfo = objectMapper.readValue(instance.getAdditionalInfo(), ContainerInfo.class);
             //sys labels
-            List<String> sysLabels = Arrays.asList("appName:" + app.getName(), "userId:" + user.getId(), "instanceId:" + instance.getId());
+            List<String> sysLabels = Arrays.asList("appName:" + app.getName(), "appVersion:" + instance.getAppVersion(), "userId:" + user.getId());
             sysLabels.addAll(containerInfo.getLabels());
             ContainerInfo.builder()
                     .imageName(containerSetting.getImageName())
-                    .name(generatorName(user.getUsername(),containerSetting.getImageName()))
+                    .name(instance.getId())
                     .ports(containerInfo.getPorts())
                     .labels(sysLabels)
                     .build();
@@ -163,14 +158,14 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
         StringBuilder sb = new StringBuilder();
         sb.append(username);
         String[] nameVersionStr = image.split(":");
-        String[]  names= nameVersionStr[0].split("/");
-        if(names.length == 1){
+        String[] names = nameVersionStr[0].split("/");
+        if (names.length == 1) {
             sb.append(names[0]);
-        }else{
-            sb.append(names[0]+"_"+names[1]);
+        } else {
+            sb.append(names[0] + "_" + names[1]);
         }
-        if(nameVersionStr.length > 1){
-            sb.append("_"+nameVersionStr[1]);
+        if (nameVersionStr.length > 1) {
+            sb.append("_" + nameVersionStr[1]);
         }
         return sb.toString();
     }

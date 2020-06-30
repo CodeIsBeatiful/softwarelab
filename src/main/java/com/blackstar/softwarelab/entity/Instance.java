@@ -35,7 +35,9 @@ public class Instance implements Serializable {
 
     private Integer status;
 
-    private String appId;
+    private String appName;
+
+    private String appVersion;
 
     private String additionalInfo;
 

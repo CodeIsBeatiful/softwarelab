@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS sys_user
 
 CREATE TABLE IF NOT EXISTS app
 (
-    name            varchar(100) not null
+    name            varchar(50) not null
         constraint app_pk
             primary key,
     author          varchar(36),
@@ -50,7 +50,8 @@ CREATE TABLE IF NOT EXISTS instance
     create_time     timestamp,
     update_time     timestamp,
     status          integer,
-    app_id          varchar(36),
+    app_name          varchar(50),
+    app_version          varchar(50),
     additional_info varchar
 );
 
