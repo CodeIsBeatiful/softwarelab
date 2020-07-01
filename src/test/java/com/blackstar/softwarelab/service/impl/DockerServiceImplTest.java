@@ -35,11 +35,14 @@ public class DockerServiceImplTest extends AbstractBaseTest {
         ports.add(port+":5432");
         List<String> labels = new ArrayList<>();
         labels.add("user:admin");
+        List<String> envs = new ArrayList<>();
+        envs.add("POSTGRES_PASSWORD=postgres");
         containerInfo = ContainerInfo.builder()
                 .imageName("postgres:9.6")
                 .name("admin_postgres_9.6")
                 .ports(ports)
                 .labels(labels)
+                .envs(envs)
                 .build();
     }
 
@@ -49,24 +52,23 @@ public class DockerServiceImplTest extends AbstractBaseTest {
         dockerServiceImpl.start(containerInfo);
         try {
             TimeUnit.SECONDS.sleep(5);
+            Connection conn = getConn(port);
+            assertNotNull(conn);
+            closeConn(conn);
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }
-        Connection conn = getConn(port);
-
-        assertNotNull(conn);
-        closeConn(conn);
-
+        } finally {
 //        dockerServiceImpl.checkStatus(containerInfo);
-
-        System.out.println(containerInfo.getStatus());
-
-        dockerServiceImpl.stop(containerInfo);
-        Connection newConn = getConn(port);
-        assertNull(newConn);
-        dockerServiceImpl.remove(containerInfo);
-
+            System.out.println(containerInfo.getStatus());
+            dockerServiceImpl.stop(containerInfo);
+            Connection newConn = getConn(port);
+            assertNull(newConn);
+            dockerServiceImpl.remove(containerInfo);
 //        dockerServiceImpl.get(containerInfo);
+        }
+
+
+
     }
 
     private Connection getConn(int port){

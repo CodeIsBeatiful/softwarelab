@@ -24,8 +24,7 @@ public class InstanceControllerTest extends AbstractBaseTest {
         instance = new Instance();
         instance.setId(UUID.randomUUID().toString());
         instance.setUserId(UUID.randomUUID().toString());
-        instance.setAppId(UUID.randomUUID().toString());
-        instance.setName("test_metabase");
+        instance.setName("test_metabase_v0.34.0");
         LocalDateTime now = LocalDateTime.now();
         instance.setCreateTime(now);
         instance.setUpdateTime(now);

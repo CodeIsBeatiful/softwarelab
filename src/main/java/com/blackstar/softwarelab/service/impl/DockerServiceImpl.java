@@ -65,6 +65,7 @@ public class DockerServiceImpl implements ContainerService {
                     .withName(containerInfo.getName())
                     .withLabels(labelMap)
                     .withPortBindings(portBindings)
+                    .withEnv(containerInfo.getEnvs())
 //                    .withHostConfig(hostConfig)
                     .exec();
 

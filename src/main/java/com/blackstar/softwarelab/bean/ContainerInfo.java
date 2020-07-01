@@ -29,5 +29,8 @@ public class ContainerInfo {
     //e.g. user:abc
     private List<String> labels;
 
+    //e.g. user=123456
+    private List<String> envs;
+
 
 }
