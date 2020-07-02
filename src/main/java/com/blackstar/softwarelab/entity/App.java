@@ -32,8 +32,6 @@ public class App implements Serializable {
 
     private String description;
 
-    private String imagePath;
-
     private String additionalInfo;
 
     private LocalDateTime createTime;

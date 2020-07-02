@@ -47,12 +47,10 @@ public class InstanceController extends BaseController {
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
     public boolean delete(@PathVariable String id) {
-        return instanceService.delete(id);
+        return instanceService.removeById(id);
     }
 
-//    public boolean delete(@PathVariable String id){
-//        return instanceService.removeById(id);
-//    }
+
 
 
     @RequestMapping(method = RequestMethod.GET)

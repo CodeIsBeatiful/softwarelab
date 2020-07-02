@@ -110,10 +110,13 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
     public boolean delete(String id) {
         Instance instance = this.getById(id);
         ContainerInfo containerInfo = getContainerInfo(instance);
-        containerService.remove(containerInfo);
+        if(containerInfo.getId() != null){
+            containerService.remove(containerInfo);
+        }
         UpdateWrapper<Instance> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.set(DbConst.COLUMN_ID,id);
         updateWrapper.set(DbConst.COLUMN_STATUS, DbConst.STATUS_DELETE);
-        return this.update(instance, updateWrapper);
+        return this.update(updateWrapper);
     }
 
     private ContainerInfo getContainerInfo(Instance instance) {
@@ -139,7 +142,9 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
             containerInfo = objectMapper.readValue(instance.getAdditionalInfo(), ContainerInfo.class);
             //sys labels
             List<String> sysLabels = Arrays.asList("appName:" + app.getName(), "appVersion:" + instance.getAppVersion(), "userId:" + user.getId());
-            sysLabels.addAll(containerInfo.getLabels());
+            if (containerInfo.getLabels() != null) {
+                sysLabels.addAll(containerInfo.getLabels());
+            }
             ContainerInfo.builder()
                     .imageName(containerSetting.getImageName())
                     .name(instance.getId())
