@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -24,8 +25,13 @@ public class InstanceControllerTest extends AbstractBaseTest {
     private InstanceController instanceController;
 
 
+    @Autowired
+    private InstanceOperationController operationController;
+
 
     private Instance instance;
+
+    private int mainPort = 31000;
 
 
     @Before
@@ -42,22 +48,32 @@ public class InstanceControllerTest extends AbstractBaseTest {
         instance.setStatus(0);
 
         ContainerInfo containerInfo = ContainerInfo.builder()
-                .imageName("metabase/metabase")
-                .ports(Arrays.asList("31000:3000"))
+                .ports(Arrays.asList(mainPort + ":3000"))
+                .envs(new ArrayList<>())
                 .build();
         instance.setAdditionalInfo(new ObjectMapper().writeValueAsString(containerInfo));
     }
 
     @Test
-    public void testCRUD(){
+    public void testCRUD() {
+        //instance ---> container
+        //save instance
         instance = instanceController.add(instance);
         Instance savedInstance = instanceController.get(this.instance.getId());
         assertNotNull(savedInstance);
         assertNotNull(savedInstance.getId());
-
+        assertNotNull(savedInstance.getName());
+        //start container
+        assertTrue(operationController.start(this.instance.getId()));
+        //stop container
+        assertTrue(operationController.stop(this.instance.getId()));
+        Instance stopedInstance = instanceController.get(this.instance.getId());
+        System.out.println("instance stop status:"+stopedInstance.getStatus());
+        //delete instance and remove container
         instanceController.delete(this.instance.getId());
         Instance deleteForeverInstance = instanceController.get(this.instance.getId());
         assertNull(deleteForeverInstance);
+        //todo asset docker container not exist
 
     }
 }

@@ -13,6 +13,7 @@ import com.blackstar.softwarelab.security.SecurityUser;
 import com.blackstar.softwarelab.service.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.omg.PortableInterceptor.INACTIVE;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -61,9 +62,10 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
         } else {
             try {
                 ContainerInfo containerInfo = objectMapper.readValue(additionalInfo, ContainerInfo.class);
-                UpdateWrapper<Instance> updateWrapper = new UpdateWrapper<>();
-                updateWrapper.set(DbConst.COLUMN_ADDITIONAL_INFO, objectMapper.writeValueAsString(containerService.start(containerInfo)));
-                return this.update(instance, updateWrapper);
+                UpdateWrapper<Instance> wrapper = new UpdateWrapper<Instance>()
+                        .set(DbConst.COLUMN_ADDITIONAL_INFO, objectMapper.writeValueAsString(containerService.start(containerInfo)))
+                        .eq(DbConst.COLUMN_ID, instanceId);
+                return this.update(wrapper);
             } catch (IOException e) {
                 throw new RuntimeException("instance start error", e);
             }
@@ -94,7 +96,7 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
         ContainerInfo containerInfo = generateContainerInfo(app, user, instance);
         try {
             instance.setAdditionalInfo(objectMapper.writeValueAsString(containerInfo));
-            instance.setName(containerInfo.getName());
+            instance.setName(instance.getName());
             instance.setUserId(userId);
             LocalDateTime now = LocalDateTime.now();
             instance.setCreateTime(now);
@@ -113,10 +115,7 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
         if(containerInfo.getId() != null){
             containerService.remove(containerInfo);
         }
-        UpdateWrapper<Instance> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.set(DbConst.COLUMN_ID,id);
-        updateWrapper.set(DbConst.COLUMN_STATUS, DbConst.STATUS_DELETE);
-        return this.update(updateWrapper);
+        return this.removeById(id);
     }
 
     private ContainerInfo getContainerInfo(Instance instance) {
@@ -145,11 +144,12 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
             if (containerInfo.getLabels() != null) {
                 sysLabels.addAll(containerInfo.getLabels());
             }
-            ContainerInfo.builder()
+            containerInfo = ContainerInfo.builder()
                     .imageName(containerSetting.getImageName())
                     .name(instance.getId())
                     .ports(containerInfo.getPorts())
                     .labels(sysLabels)
+                    .envs(containerInfo.getEnvs())
                     .build();
 
         } catch (IOException e) {
@@ -157,7 +157,6 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
         }
         return containerInfo;
     }
-
 
     private String generatorName(String username, String image) {
         StringBuilder sb = new StringBuilder();

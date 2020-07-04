@@ -13,9 +13,7 @@ public interface ContainerService {
 
     void stop(ContainerInfo containerInfo);
 
-
     void remove(ContainerInfo containerInfo);
-
 
     List<ContainerInfo> listByIds(List<String> ids);
 

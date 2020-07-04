@@ -4,6 +4,7 @@ package com.blackstar.softwarelab.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.blackstar.softwarelab.bean.ContainerInfo;
 import com.blackstar.softwarelab.common.BaseController;
 import com.blackstar.softwarelab.common.DbConst;
 import com.blackstar.softwarelab.entity.Instance;
@@ -47,7 +48,7 @@ public class InstanceController extends BaseController {
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
     public boolean delete(@PathVariable String id) {
-        return instanceService.removeById(id);
+        return instanceService.delete(id);
     }
 
 
