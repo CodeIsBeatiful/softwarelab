@@ -76,7 +76,7 @@ public class AppController extends BaseController {
         return appService.page(appPage, appQueryWrapper);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "?condition=type")
+    @RequestMapping(method = RequestMethod.GET, value = "?op=type")
     public IPage<App> listByType(@RequestParam String type, @RequestParam int pageNum, @RequestParam int pageSize) {
         Page<App> appPage = new Page<>(pageNum, pageSize);
         QueryWrapper<App> appQueryWrapper = new QueryWrapper<App>()
