@@ -41,5 +41,7 @@ public class Instance implements Serializable {
 
     private String additionalInfo;
 
+    private Integer running_status;
+
 
 }

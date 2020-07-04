@@ -47,12 +47,13 @@ CREATE TABLE IF NOT EXISTS instance
     user_id         varchar(36),
     name            varchar(100),
     description     text,
-    create_time     timestamp,
-    update_time     timestamp,
-    status          integer,
     app_name          varchar(50),
     app_version          varchar(50),
-    additional_info varchar
+    additional_info varchar,
+    running_status  integer,
+    create_time     timestamp,
+    update_time     timestamp,
+    status          integer
 );
 
 
