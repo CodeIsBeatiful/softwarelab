@@ -6,7 +6,7 @@ import com.blackstar.softwarelab.security.SecurityUser;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author blackstar
@@ -21,4 +21,6 @@ public interface IInstanceService extends IService<Instance> {
     boolean stop(SecurityUser securityUser, String id);
 
     boolean delete(String id);
+
+    boolean startByInstance(Instance instance);
 }

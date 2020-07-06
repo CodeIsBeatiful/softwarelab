@@ -33,4 +33,8 @@ public class ContainerInfo {
     private List<String> envs;
 
 
+    public ContainerInfo self(){
+        return this;
+    }
+
 }

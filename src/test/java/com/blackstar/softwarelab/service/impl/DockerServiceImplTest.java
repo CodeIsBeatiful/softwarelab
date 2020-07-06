@@ -2,6 +2,7 @@ package com.blackstar.softwarelab.service.impl;
 
 import com.blackstar.softwarelab.AbstractBaseTest;
 import com.blackstar.softwarelab.bean.ContainerInfo;
+import com.github.dockerjava.api.model.Container;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,9 @@ public class DockerServiceImplTest extends AbstractBaseTest {
     @Test
     public void test1(){
         dockerServiceImpl.start(containerInfo);
+        //get container
+        Container container = dockerServiceImpl.getContainer(containerInfo);
+        assertNotNull(container);
         try {
             TimeUnit.SECONDS.sleep(5);
             Connection conn = getConn(port);

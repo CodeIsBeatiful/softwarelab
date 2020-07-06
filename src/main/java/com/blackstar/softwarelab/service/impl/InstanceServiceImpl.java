@@ -10,10 +10,12 @@ import com.blackstar.softwarelab.entity.Instance;
 import com.blackstar.softwarelab.entity.SysUser;
 import com.blackstar.softwarelab.mapper.InstanceMapper;
 import com.blackstar.softwarelab.security.SecurityUser;
-import com.blackstar.softwarelab.service.*;
+import com.blackstar.softwarelab.service.ContainerService;
+import com.blackstar.softwarelab.service.IAppService;
+import com.blackstar.softwarelab.service.IInstanceService;
+import com.blackstar.softwarelab.service.ISysUserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.omg.PortableInterceptor.INACTIVE;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -56,6 +58,10 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
         if (instance == null) {
             throw new RuntimeException("can't find instance info by instance");
         }
+        return startByInstance(instance);
+    }
+
+    public boolean startByInstance(Instance instance) {
         String additionalInfo = instance.getAdditionalInfo();
         if (additionalInfo == null) {
             throw new RuntimeException("can't find container info by instance");
@@ -64,13 +70,12 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
                 ContainerInfo containerInfo = objectMapper.readValue(additionalInfo, ContainerInfo.class);
                 UpdateWrapper<Instance> wrapper = new UpdateWrapper<Instance>()
                         .set(DbConst.COLUMN_ADDITIONAL_INFO, objectMapper.writeValueAsString(containerService.start(containerInfo)))
-                        .eq(DbConst.COLUMN_ID, instanceId);
+                        .eq(DbConst.COLUMN_ID, instance.getId());
                 return this.update(wrapper);
             } catch (IOException e) {
                 throw new RuntimeException("instance start error", e);
             }
         }
-
     }
 
     @Override
@@ -112,7 +117,7 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
     public boolean delete(String id) {
         Instance instance = this.getById(id);
         ContainerInfo containerInfo = getContainerInfo(instance);
-        if(containerInfo.getId() != null){
+        if (containerInfo.getId() != null) {
             containerService.remove(containerInfo);
         }
         return this.removeById(id);

@@ -17,3 +17,8 @@ user:
 
 instance:
   ports: 30001-39999
+
+
+checker:
+  enabled: true
+  sleepMillSeconds: 500

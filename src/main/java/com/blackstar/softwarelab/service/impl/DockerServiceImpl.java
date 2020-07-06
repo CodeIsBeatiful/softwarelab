@@ -1,6 +1,7 @@
 package com.blackstar.softwarelab.service.impl;
 
 
+import com.blackstar.softwarelab.common.ContainerStatusConst;
 import com.blackstar.softwarelab.common.KeyValuePair;
 import com.blackstar.softwarelab.bean.ContainerInfo;
 import com.blackstar.softwarelab.service.ContainerService;
@@ -56,11 +57,9 @@ public class DockerServiceImpl implements ContainerService {
             Map<String, String> labelMap = new HashMap<>();
             labels.forEach(str -> {
                 String[] split = str.split(":");
-                labelMap.put(split[0],split[1]);
+                labelMap.put(split[0], split[1]);
             });
-            ports.forEach(str -> {
-                portBindings.add(PortBinding.parse(str));
-            });
+            ports.forEach(str -> portBindings.add(PortBinding.parse(str)));
             CreateContainerResponse createContainer = dockerClient.createContainerCmd(imageName)
                     .withName(containerInfo.getName())
                     .withLabels(labelMap)
@@ -73,10 +72,10 @@ public class DockerServiceImpl implements ContainerService {
             containerInfo.setId(createContainer.getId());
 
         } else {
-            if (container.getStatus().startsWith("Exited")) {
+            if (container.getState().equals(ContainerStatusConst.EXITED)) {
                 dockerClient.startContainerCmd(container.getId()).exec();
             } else {
-                log.warn(container.getNames()[0] + "is started before");
+                log.warn("container id [{}] is started before", container.getId());
             }
             containerInfo.setId(container.getId());
         }
@@ -93,7 +92,7 @@ public class DockerServiceImpl implements ContainerService {
     }
 
 
-    public Container getContainer(ContainerInfo containerInfo){
+    public Container getContainer(ContainerInfo containerInfo) {
         //get containers if exist
         List<Container> containers = dockerClient.listContainersCmd()
                 .withIdFilter(Arrays.asList(containerInfo.getId()))
@@ -107,11 +106,16 @@ public class DockerServiceImpl implements ContainerService {
 
     @Override
     public void remove(ContainerInfo containerInfo) {
-        if (containerInfo.getId() == null) {
+        removeById(containerInfo.getId());
+    }
+
+    @Override
+    public void removeById(String id) {
+        if (id == null) {
             throw new RuntimeException("must have container id");
         }
         //force remove
-        dockerClient.removeContainerCmd(containerInfo.getId()).withForce(true).exec();
+        dockerClient.removeContainerCmd(id).withForce(true).exec();
     }
 
     @Override
@@ -124,10 +128,19 @@ public class DockerServiceImpl implements ContainerService {
     }
 
     @Override
-    public List<ContainerInfo> listByLabels(List<KeyValuePair> labels){
+    public List<ContainerInfo> listByNames(List<String> names) {
+        List<Container> containers = dockerClient.listContainersCmd()
+                .withNameFilter(names)
+                .withShowAll(true)
+                .exec();
+        return getContainerInfos(containers);
+    }
+
+    @Override
+    public List<ContainerInfo> listByLabels(List<KeyValuePair> labels) {
         Map<String, String> labelMap = new HashMap<>();
         labels.forEach(keyValuePair -> {
-            labelMap.put(keyValuePair.getKey(),keyValuePair.getValue());
+            labelMap.put(keyValuePair.getKey(), keyValuePair.getValue());
         });
         List<Container> containers = dockerClient.listContainersCmd()
                 .withLabelFilter(labelMap)
@@ -137,15 +150,6 @@ public class DockerServiceImpl implements ContainerService {
     }
 
 
-    @Override
-    public String checkStatus(ContainerInfo containerInfo) {
-        List<ContainerInfo> containerInfos = listByIds(Arrays.asList(containerInfo.getId()));
-        //DOCKER STATUS
-        if(containerInfos == null || containerInfos.size() == 0){
-            return null;
-        }
-        return containerInfos.get(0).getStatus().split("_")[0];
-    }
 
     private List<ContainerInfo> getContainerInfos(List<Container> containers) {
         if (containers == null || containers.size() == 0) {
@@ -154,15 +158,26 @@ public class DockerServiceImpl implements ContainerService {
             ArrayList<ContainerInfo> containerInfos = new ArrayList<>();
             for (Container container : containers) {
                 containerInfos.add(ContainerInfo.builder()
-                        .name(container.getNames()[0])
+                        // fix bug : name need start with /
+                        .name(container.getNames()[0].substring(1))
                         .id(container.getId())
                         .imageName(container.getImage())
-                        .status(container.getStatus())
+                        .status(container.getState())
                         .build());
             }
             return containerInfos;
         }
     }
 
-
+    @Override
+    public String getState(String name) {
+        List<Container> containers = dockerClient.listContainersCmd()
+                .withNameFilter(Arrays.asList(name))
+                .withShowAll(true)
+                .exec();
+        if (containers == null || containers.size() == 0) {
+            return null;
+        }
+        return containers.get(0).getState();
+    }
 }
