@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    schema: classpath:db/schema.sql
+    data: classpath:db/data.sql
+    url: jdbc:postgresql://localhost:5432/softwarelab
+    username: postgres
+    password: postgres
+
+
+
+user:
+  admin:
+    id: 205635b9-ab37-43cb-82c2-811a58880fa1
+
+
+
+instance:
+  ports: 30001-39999
+
+
+checker:
+  enabled: false
+  sleepMillSeconds: 500

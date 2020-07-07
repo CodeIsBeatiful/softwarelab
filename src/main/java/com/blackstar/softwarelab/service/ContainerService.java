@@ -6,6 +6,7 @@ import com.blackstar.softwarelab.bean.ContainerInfo;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 public interface ContainerService {
 

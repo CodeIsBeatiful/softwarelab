@@ -61,6 +61,7 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
         return startByInstance(instance);
     }
 
+
     public boolean startByInstance(Instance instance) {
         String additionalInfo = instance.getAdditionalInfo();
         if (additionalInfo == null) {
@@ -68,7 +69,10 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
         } else {
             try {
                 ContainerInfo containerInfo = objectMapper.readValue(additionalInfo, ContainerInfo.class);
+                //解决与ContainerChecker修复冲突，start时确保instance相关容器启动完成后，才设置状态为RUNNING_STATUS_START，stop时，先设置RUNNING_STATUS_STOP状态，再stop容器
+                //TODO 需要check等待容器启动完毕后再写入状态
                 UpdateWrapper<Instance> wrapper = new UpdateWrapper<Instance>()
+                        .set(DbConst.COLUMN_RUNNING_STATUS,DbConst.RUNNING_STATUS_START)
                         .set(DbConst.COLUMN_ADDITIONAL_INFO, objectMapper.writeValueAsString(containerService.start(containerInfo)))
                         .eq(DbConst.COLUMN_ID, instance.getId());
                 return this.update(wrapper);
@@ -88,8 +92,12 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
         if (containerInfo == null) {
             throw new RuntimeException("container info is null");
         }
+        UpdateWrapper<Instance> wrapper = new UpdateWrapper<Instance>()
+                .set(DbConst.COLUMN_RUNNING_STATUS,DbConst.RUNNING_STATUS_START)
+                .eq(DbConst.COLUMN_ID, instance.getId());
+        boolean updateFlag  = this.update(wrapper);
         containerService.stop(containerInfo);
-        return true;
+        return updateFlag;
     }
 
 
