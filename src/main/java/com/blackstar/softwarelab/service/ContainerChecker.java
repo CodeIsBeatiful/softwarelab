@@ -38,7 +38,7 @@ public class ContainerChecker {
 
     private ExecutorService repairThreadPool = Executors.newFixedThreadPool(10);
 
-    private Map<String, Future> needRepairContainersMap = new ConcurrentHashMap<>();
+    private Map<String, Future> repairingContainersMap = new ConcurrentHashMap<>();
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -66,18 +66,40 @@ public class ContainerChecker {
         }
         List<String> instanceIds = instances.parallelStream().map(Instance::getId).collect(Collectors.toList());
         List<ContainerInfo> containerInfos = containerService.listByNames(instanceIds);
-        Map<String, ContainerInfo> nameContainerInfoHashMap = null;
-        if (containerInfos != null && containerInfos.size() > 0) {
-            nameContainerInfoHashMap = containerInfos.parallelStream()
-                    .filter(containerInfo -> containerInfo.getStatus().equals(ContainerStatusConst.RUNNING)
-                            || containerInfo.getStatus().equals(ContainerStatusConst.RESTARTING))
-                    .collect(Collectors.toMap(ContainerInfo::getName, ContainerInfo::self));
-        }
-        Map<String, ContainerInfo> finalNameContainerInfoHashMap = nameContainerInfoHashMap;
+        final Map<String, ContainerInfo> finalNameContainerInfoMap = containerInfos == null ? new ConcurrentHashMap<>() : containerInfos.parallelStream().collect(Collectors.toMap(ContainerInfo::getName, ContainerInfo::self));
         instances.parallelStream().forEach(instance -> {
-            //don't add to needRepairContainersMap if exist
-            if ((finalNameContainerInfoHashMap == null || finalNameContainerInfoHashMap.get(instance.getId()) == null) && needRepairContainersMap.get(instance.getId()) == null) {
-                needRepairContainersMap.put(instance.getId(), repairThreadPool.submit(() -> {
+            if (repairingContainersMap.get(instance.getId()) != null) {
+                return;
+            }
+            ContainerInfo containerInfo = finalNameContainerInfoMap.get(instance.getId());
+            if (containerInfo != null) {
+                switch (containerInfo.getStatus()) {
+                    case ContainerStatusConst.RESTARTING:
+                    case ContainerStatusConst.RUNNING:
+                        // begin removing,just wait
+                    case ContainerStatusConst.REMOVING:
+                        break;
+                    case ContainerStatusConst.CREATED:
+                    case ContainerStatusConst.EXITED:
+                        //need to start
+                        log.warn("instance id:[{}] begin to repair",instance.getId());
+                        repairingContainersMap.put(instance.getId(), repairThreadPool.submit(() -> {
+                            instanceService.startByInstance(instance);
+                        }));
+                        break;
+                    //unused status
+                    case ContainerStatusConst.PAUSED:
+                    case ContainerStatusConst.DEAD:
+                        //remove and wait next schedule
+                        containerService.removeById(containerInfo.getId());
+                    default:
+                        break;
+                }
+
+            } else {
+                //need to start
+                log.warn("instance id:[{}] begin to repair",instance.getId());
+                repairingContainersMap.put(instance.getId(), repairThreadPool.submit(() -> {
                     instanceService.startByInstance(instance);
                 }));
             }
@@ -85,38 +107,14 @@ public class ContainerChecker {
     }
 
     private void checkRepairMap() {
-        needRepairContainersMap.forEach((instanceId, future) -> {
+        repairingContainersMap.forEach((instanceId, future) -> {
             if (future.isDone()) {
                 switch (containerService.getState(instanceId)) {
-                    case ContainerStatusConst.CREATED:
-                    case ContainerStatusConst.RESTARTING:
-                    case ContainerStatusConst.REMOVING:
-                    case ContainerStatusConst.EXITED:
-                        //just wait，do nothing
-                        break;
                     case ContainerStatusConst.RUNNING:
                         //remove from map
-                        needRepairContainersMap.remove(instanceId);
-                        break;
-                    case ContainerStatusConst.PAUSED:
-                    case ContainerStatusConst.DEAD:
-                        //remove container in docker
-                        Instance instance = instanceService.getById(instanceId);
-                        if (instance == null) {
-                            log.error("instance {} is dead or paused ,but is removed", instanceId);
-                            return;
-                        }
-                        try {
-                            ContainerInfo containerInfo = objectMapper.readValue(instance.getAdditionalInfo(), ContainerInfo.class);
-                            containerService.remove(containerInfo);
-                            //remove from map
-                            needRepairContainersMap.remove(instanceId);
-                        } catch (IOException e) {
-                            log.error("read value from instance failed", e);
-                        }
+                        repairingContainersMap.remove(instanceId);
                         break;
                     default:
-
                         break;
                 }
             }

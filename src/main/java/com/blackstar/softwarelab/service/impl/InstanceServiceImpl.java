@@ -1,5 +1,6 @@
 package com.blackstar.softwarelab.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.blackstar.softwarelab.bean.ContainerInfo;
@@ -54,7 +55,9 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
 
     @Override
     public boolean start(String userId, String instanceId) {
-        Instance instance = this.getById(instanceId);
+        Instance instance = this.getOne(new QueryWrapper<Instance>()
+                .eq(DbConst.COLUMN_ID,instanceId)
+                .eq(DbConst.COLUMN_USER_ID,userId));
         if (instance == null) {
             throw new RuntimeException("can't find instance info by instance");
         }
@@ -83,7 +86,7 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
     }
 
     @Override
-    public boolean stop(SecurityUser securityUser, String id) {
+    public boolean stop(String userId, String id) {
         Instance instance = this.getById(id);
         if (instance == null) {
             throw new RuntimeException("can't find instance by id");
@@ -93,8 +96,9 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
             throw new RuntimeException("container info is null");
         }
         UpdateWrapper<Instance> wrapper = new UpdateWrapper<Instance>()
-                .set(DbConst.COLUMN_RUNNING_STATUS,DbConst.RUNNING_STATUS_START)
-                .eq(DbConst.COLUMN_ID, instance.getId());
+                .set(DbConst.COLUMN_RUNNING_STATUS,DbConst.RUNNING_STATUS_STOP)
+                .eq(DbConst.COLUMN_ID, instance.getId())
+                .eq(DbConst.COLUMN_USER_ID,userId);
         boolean updateFlag  = this.update(wrapper);
         containerService.stop(containerInfo);
         return updateFlag;

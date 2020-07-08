@@ -42,8 +42,8 @@ public class InstanceOperationController extends BaseController {
 
     @RequestMapping(method = RequestMethod.POST,value = "{id}?op=stop")
     public boolean stop(@PathVariable String id){
-
-        return instanceService.stop(getSecurityUser(),id);
+        SecurityUser securityUser = getSecurityUser();
+        return instanceService.stop(securityUser.getId(),id);
 
     }
 

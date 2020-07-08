@@ -18,7 +18,7 @@ public interface IInstanceService extends IService<Instance> {
 
     void add(String userId, Instance instance);
 
-    boolean stop(SecurityUser securityUser, String id);
+    boolean stop(String userId, String id);
 
     boolean delete(String id);
 

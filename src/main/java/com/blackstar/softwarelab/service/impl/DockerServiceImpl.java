@@ -72,10 +72,10 @@ public class DockerServiceImpl implements ContainerService {
             containerInfo.setId(createContainer.getId());
 
         } else {
-            if (container.getState().equals(ContainerStatusConst.EXITED)) {
+            if (container.getState().equals(ContainerStatusConst.EXITED) || container.getState().equals(ContainerStatusConst.CREATED)) {
                 dockerClient.startContainerCmd(container.getId()).exec();
             } else {
-                log.warn("container id [{}] is started before", container.getId());
+                log.warn("start container  [{}] catch error [{}] ", container.getId(),container.getState());
             }
             containerInfo.setId(container.getId());
         }
