@@ -2,6 +2,7 @@ package com.blackstar.softwarelab.service.impl;
 
 import com.blackstar.softwarelab.AbstractBaseTest;
 import com.blackstar.softwarelab.bean.ContainerInfo;
+import com.blackstar.softwarelab.exception.PortException;
 import com.github.dockerjava.api.model.Container;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,7 +51,11 @@ public class DockerServiceImplTest extends AbstractBaseTest {
 
     @Test
     public void test1(){
-        dockerServiceImpl.start(containerInfo);
+        try {
+            dockerServiceImpl.start(containerInfo);
+        } catch (PortException e) {
+            e.printStackTrace();
+        }
         //get container
         Container container = dockerServiceImpl.getContainer(containerInfo);
         assertNotNull(container);

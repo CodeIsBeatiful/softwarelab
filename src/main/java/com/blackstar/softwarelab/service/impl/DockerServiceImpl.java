@@ -1,29 +1,36 @@
 package com.blackstar.softwarelab.service.impl;
 
 
+import com.blackstar.softwarelab.bean.ContainerInfo;
 import com.blackstar.softwarelab.common.ContainerStatusConst;
 import com.blackstar.softwarelab.common.KeyValuePair;
-import com.blackstar.softwarelab.bean.ContainerInfo;
+import com.blackstar.softwarelab.exception.PortException;
 import com.blackstar.softwarelab.service.ContainerService;
+import com.blackstar.softwarelab.service.IPortService;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.command.DockerCmdExecFactory;
 import com.github.dockerjava.api.model.Container;
+import com.github.dockerjava.api.model.ExposedPort;
 import com.github.dockerjava.api.model.PortBinding;
+import com.github.dockerjava.api.model.Ports;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
 import com.github.dockerjava.jaxrs.JerseyDockerCmdExecFactory;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 
 @Slf4j
-@Component
+@Service
 public class DockerServiceImpl implements ContainerService {
 
-
     private DockerClient dockerClient;
+
+    @Autowired
+    private IPortService portService;
 
 
     public DockerServiceImpl() {
@@ -46,20 +53,13 @@ public class DockerServiceImpl implements ContainerService {
     }
 
 
-    public ContainerInfo start(ContainerInfo containerInfo) {
+    public ContainerInfo start(ContainerInfo containerInfo) throws PortException {
         //get exist container
         Container container = getContainer(containerInfo);
         if (container == null) {
             String imageName = containerInfo.getImageName();
-            List<String> ports = containerInfo.getPorts();
-            List<PortBinding> portBindings = new ArrayList<>();
-            List<String> labels = containerInfo.getLabels();
-            Map<String, String> labelMap = new HashMap<>();
-            labels.forEach(str -> {
-                String[] split = str.split(":");
-                labelMap.put(split[0], split[1]);
-            });
-            ports.forEach(str -> portBindings.add(PortBinding.parse(str)));
+            Map<String,String> labelMap = getLabelMap(containerInfo.getLabels());
+            List<PortBinding> portBindings = getPortBinds(containerInfo.getPorts());
             CreateContainerResponse createContainer = dockerClient.createContainerCmd(imageName)
                     .withName(containerInfo.getName())
                     .withLabels(labelMap)
@@ -75,13 +75,36 @@ public class DockerServiceImpl implements ContainerService {
             if (container.getState().equals(ContainerStatusConst.EXITED) || container.getState().equals(ContainerStatusConst.CREATED)) {
                 dockerClient.startContainerCmd(container.getId()).exec();
             } else {
-                log.warn("start container  [{}] catch error [{}] ", container.getId(),container.getState());
+                log.warn("start container  [{}] catch error [{}] ", container.getId(), container.getState());
             }
             containerInfo.setId(container.getId());
         }
         return containerInfo;
     }
 
+    private Map<String, String> getLabelMap(List<String> labels) {
+        Map<String, String> labelMap = new HashMap<>();
+        labels.forEach(str -> {
+            String[] split = str.split(":");
+            labelMap.put(split[0], split[1]);
+        });
+        return labelMap;
+    }
+
+    private List<PortBinding> getPortBinds(List<String> ports) throws PortException{
+        List<PortBinding> portBindings = new ArrayList<>();
+        for (String port : ports) {
+            String[] portMap = port.split(":");
+            String bindPort = portMap[0];
+            int exposePort = Integer.parseInt(portMap[1]);
+            //e.g. :8080
+            if (bindPort.length() == 0) {
+                bindPort = portService.getRandomPort() + "";
+            }
+            portBindings.add(new PortBinding(new Ports.Binding(null,bindPort),new ExposedPort(exposePort)));
+        }
+        return portBindings;
+    }
 
     public void stop(ContainerInfo containerInfo) {
         if (containerInfo.getId() == null) {
@@ -148,7 +171,6 @@ public class DockerServiceImpl implements ContainerService {
                 .exec();
         return getContainerInfos(containers);
     }
-
 
 
     private List<ContainerInfo> getContainerInfos(List<Container> containers) {

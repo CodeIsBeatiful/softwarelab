@@ -9,16 +9,12 @@ import com.blackstar.softwarelab.common.DbConst;
 import com.blackstar.softwarelab.entity.App;
 import com.blackstar.softwarelab.entity.Instance;
 import com.blackstar.softwarelab.entity.SysUser;
+import com.blackstar.softwarelab.exception.PortException;
 import com.blackstar.softwarelab.mapper.InstanceMapper;
-import com.blackstar.softwarelab.security.SecurityUser;
-import com.blackstar.softwarelab.service.ContainerService;
-import com.blackstar.softwarelab.service.IAppService;
-import com.blackstar.softwarelab.service.IInstanceService;
-import com.blackstar.softwarelab.service.ISysUserService;
+import com.blackstar.softwarelab.service.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -48,8 +44,9 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
     @Autowired
     private IAppService appService;
 
-    @Value("${instance.ports}")
-    private String ports;
+    @Autowired
+    private IPortService portService;
+
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -73,14 +70,17 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
             try {
                 ContainerInfo containerInfo = objectMapper.readValue(additionalInfo, ContainerInfo.class);
                 //解决与ContainerChecker修复冲突，start时确保instance相关容器启动完成后，才设置状态为RUNNING_STATUS_START，stop时，先设置RUNNING_STATUS_STOP状态，再stop容器
-                //TODO 需要check等待容器启动完毕后再写入状态
+                //TODO 可能需要check等待容器启动完毕后再写入状态
+                ContainerInfo startContainerInfo = containerService.start(containerInfo);
                 UpdateWrapper<Instance> wrapper = new UpdateWrapper<Instance>()
                         .set(DbConst.COLUMN_RUNNING_STATUS,DbConst.RUNNING_STATUS_START)
-                        .set(DbConst.COLUMN_ADDITIONAL_INFO, objectMapper.writeValueAsString(containerService.start(containerInfo)))
+                        .set(DbConst.COLUMN_ADDITIONAL_INFO, objectMapper.writeValueAsString(startContainerInfo))
                         .eq(DbConst.COLUMN_ID, instance.getId());
                 return this.update(wrapper);
             } catch (IOException e) {
                 throw new RuntimeException("instance start error", e);
+            } catch (PortException e) {
+                throw new RuntimeException("instance port error",e);
             }
         }
     }

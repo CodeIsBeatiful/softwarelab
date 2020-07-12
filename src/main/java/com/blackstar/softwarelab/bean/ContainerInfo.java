@@ -22,8 +22,7 @@ public class ContainerInfo {
 
     private String status;
 
-
-    //e.g. pg 5444:5432
+    //e.g. pg 5444:5432, :5432
     private List<String> ports;
 
     //e.g. user:abc

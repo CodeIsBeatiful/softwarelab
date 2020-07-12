@@ -1,16 +1,15 @@
 package com.blackstar.softwarelab.service;
 
 
-import com.blackstar.softwarelab.common.KeyValuePair;
 import com.blackstar.softwarelab.bean.ContainerInfo;
+import com.blackstar.softwarelab.common.KeyValuePair;
+import com.blackstar.softwarelab.exception.PortException;
 
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 
 public interface ContainerService {
 
-    ContainerInfo start(ContainerInfo containerInfo);
+    ContainerInfo start(ContainerInfo containerInfo) throws PortException;
 
     void stop(ContainerInfo containerInfo);
 
