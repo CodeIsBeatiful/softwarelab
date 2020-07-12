@@ -14,8 +14,11 @@ public class TestController {
     }
 
 
+    @RequestMapping("/exp")
+    public String exception(){
+        throw new RuntimeException("test runtime exception,need  catch it");
+    }
 
-    
 
 
 }
