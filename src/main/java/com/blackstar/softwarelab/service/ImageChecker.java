@@ -1,7 +1,7 @@
 package com.blackstar.softwarelab.service;
 
 import com.github.dockerjava.api.async.ResultCallback;
-import com.github.dockerjava.api.model.PushResponseItem;
+import com.github.dockerjava.api.model.PullResponseItem;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class ImageChecker {
 
-    private Map<String, ResultCallback.Adapter<PushResponseItem>> pullImageMap = new ConcurrentHashMap<>();
+    private Map<String, ResultCallback.Adapter<PullResponseItem>> pullImageMap = new ConcurrentHashMap<>();
 
     @Value("${checker.sleepMillSeconds:500}")
     private int sleepMillSeconds;
@@ -39,7 +39,7 @@ public class ImageChecker {
         }, "checkImageThread").start();
     }
 
-    public boolean add(String imageName, ResultCallback.Adapter<PushResponseItem> callback) {
+    public boolean add(String imageName, ResultCallback.Adapter<PullResponseItem> callback) {
         if (pullImageMap.get(imageName) != null) {
             return false;
         }
@@ -53,6 +53,7 @@ public class ImageChecker {
             try {
                 if (callback.awaitCompletion(1, TimeUnit.SECONDS)) {
                     pullImageMap.remove(imageName);
+                    //todo notify
                 }
             } catch (InterruptedException e) {
                 log.error("check image error:" + e);
