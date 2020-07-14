@@ -8,15 +8,11 @@ import com.blackstar.softwarelab.exception.PortException;
 import com.blackstar.softwarelab.service.ContainerService;
 import com.blackstar.softwarelab.service.IPortService;
 import com.github.dockerjava.api.DockerClient;
+import com.github.dockerjava.api.async.ResultCallback;
 import com.github.dockerjava.api.command.CreateContainerResponse;
-import com.github.dockerjava.api.command.DockerCmdExecFactory;
-import com.github.dockerjava.api.model.Container;
-import com.github.dockerjava.api.model.ExposedPort;
-import com.github.dockerjava.api.model.PortBinding;
-import com.github.dockerjava.api.model.Ports;
+import com.github.dockerjava.api.model.*;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientBuilder;
-import com.github.dockerjava.jaxrs.JerseyDockerCmdExecFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,16 +37,23 @@ public class DockerServiceImpl implements ContainerService {
         DefaultDockerClientConfig config = DefaultDockerClientConfig
                 .createDefaultConfigBuilder()
                 .withDockerHost("unix:///var/run/docker.sock")
+//                .withRegistryUrl("https://index.docker.io/v1/")
                 .build();
 
-        DockerCmdExecFactory dockerCmdExecFactory = new JerseyDockerCmdExecFactory()
-                .withReadTimeout(1000)
-                .withConnectTimeout(1000);
+
+//        DockerHttpClient httpClient = new ApacheDockerHttpClient.Builder()
+//                .dockerHost(config.getDockerHost())
+//                .sslConfig(config.getSSLConfig())
+//                .build();
+
+//        DockerCmdExecFactory dockerCmdExecFactory = new JerseyDockerCmdExecFactory()
+//                .withReadTimeout(1000)
+//                .withConnectTimeout(1000);
 
         dockerClient = DockerClientBuilder.getInstance(config)
-                .withDockerCmdExecFactory(dockerCmdExecFactory)
                 .build();
     }
+
 
 
     public ContainerInfo start(ContainerInfo containerInfo) throws PortException {
@@ -201,5 +204,24 @@ public class DockerServiceImpl implements ContainerService {
             return null;
         }
         return containers.get(0).getState();
+    }
+
+    @Override
+    public boolean hasImage(String imageName) {
+        List<Image> images = dockerClient.listImagesCmd().withImageNameFilter(imageName).exec();
+        if(images == null || images.size() == 0) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public ResultCallback.Adapter<PullResponseItem> pullImage(String imageName) {
+        return dockerClient.pullImageCmd(imageName).start();
+    }
+
+    @Override
+    public void removeImage(String imageName) {
+        dockerClient.removeImageCmd(imageName).exec();
     }
 }

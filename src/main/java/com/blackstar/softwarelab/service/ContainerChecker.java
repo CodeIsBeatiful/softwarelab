@@ -6,22 +6,20 @@ import com.blackstar.softwarelab.bean.ContainerInfo;
 import com.blackstar.softwarelab.common.ContainerStatusConst;
 import com.blackstar.softwarelab.common.DbConst;
 import com.blackstar.softwarelab.entity.Instance;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 
-@Service
+@Component
 @Slf4j
 @ConditionalOnProperty(prefix = "checker", value = "enabled", havingValue = "true")
 public class ContainerChecker {
@@ -40,8 +38,6 @@ public class ContainerChecker {
 
     private Map<String, Future> repairingContainersMap = new ConcurrentHashMap<>();
 
-    private ObjectMapper objectMapper = new ObjectMapper();
-
     @PostConstruct
     public void init() {
         new Thread(() -> {
@@ -54,7 +50,7 @@ public class ContainerChecker {
             } catch (InterruptedException e) {
                 log.error("checker Interrupted", e);
             }
-        }, "checkStartThread").start();
+        }, "checkContainerThread").start();
 
     }
 

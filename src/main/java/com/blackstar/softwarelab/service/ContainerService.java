@@ -4,6 +4,8 @@ package com.blackstar.softwarelab.service;
 import com.blackstar.softwarelab.bean.ContainerInfo;
 import com.blackstar.softwarelab.common.KeyValuePair;
 import com.blackstar.softwarelab.exception.PortException;
+import com.github.dockerjava.api.async.ResultCallback;
+import com.github.dockerjava.api.model.PullResponseItem;
 
 import java.util.List;
 
@@ -24,4 +26,10 @@ public interface ContainerService {
     List<ContainerInfo> listByLabels(List<KeyValuePair> labels);
 
     String getState(String name);
+
+    boolean hasImage(String imageName);
+
+    ResultCallback.Adapter<PullResponseItem> pullImage(String imageName);
+
+    void removeImage(String imageName);
 }

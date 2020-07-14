@@ -3,7 +3,9 @@ package com.blackstar.softwarelab.service.impl;
 import com.blackstar.softwarelab.AbstractBaseTest;
 import com.blackstar.softwarelab.bean.ContainerInfo;
 import com.blackstar.softwarelab.exception.PortException;
+import com.github.dockerjava.api.async.ResultCallback;
 import com.github.dockerjava.api.model.Container;
+import com.github.dockerjava.api.model.PullResponseItem;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 
 public class DockerServiceImplTest extends AbstractBaseTest {
@@ -50,7 +51,7 @@ public class DockerServiceImplTest extends AbstractBaseTest {
 
 
     @Test
-    public void test1(){
+    public void testStartAndStop(){
         try {
             dockerServiceImpl.start(containerInfo);
         } catch (PortException e) {
@@ -78,6 +79,26 @@ public class DockerServiceImplTest extends AbstractBaseTest {
 
 
 
+    }
+
+
+    @Test
+    public void testImage(){
+        assertTrue(dockerServiceImpl.hasImage("postgres:9.6"));
+    }
+
+    @Test
+    public void testPullImage(){
+        String imageName = "hello-world:latest";
+        ResultCallback.Adapter<PullResponseItem> responseItemAdapter = dockerServiceImpl.pullImage(imageName);
+        try {
+            assertTrue(responseItemAdapter.awaitCompletion(60, TimeUnit.SECONDS));
+            dockerServiceImpl.removeImage(imageName);
+            assertFalse(dockerServiceImpl.hasImage(imageName));
+
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     private Connection getConn(int port){
