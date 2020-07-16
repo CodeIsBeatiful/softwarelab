@@ -2,6 +2,7 @@ package com.blackstar.softwarelab.websocket;
 
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,9 +11,11 @@ import lombok.extern.slf4j.Slf4j;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class WebSocketMessage {
+@Builder
+public class WebSocketResponseMessage {
 
+    //success or failed
     private String type;
 
-    private String data;
+    private String detail;
 }

@@ -7,13 +7,10 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import java.io.BufferedReader;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 
-public class SlWebSocketHandler extends TextWebSocketHandler {
+public class TerminalWebSocketHandler extends TextWebSocketHandler {
 
 
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -21,7 +18,7 @@ public class SlWebSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         super.afterConnectionEstablished(session);
-        WebSocketMessage successMessage = new WebSocketMessage("success", "service is connected");
+        WebSocketResponseMessage successMessage = new WebSocketResponseMessage("success", "service is connected");
         session.sendMessage(new TextMessage(objectMapper.writeValueAsBytes(successMessage)));
 
     }
@@ -37,12 +34,12 @@ public class SlWebSocketHandler extends TextWebSocketHandler {
             if (errorStream.available() > 0) {
                 byte[] bytes = new byte[errorStream.available()];
                 errorStream.read(bytes);
-                WebSocketMessage errorMessage = new WebSocketMessage("error", new String(bytes, StandardCharsets.UTF_8));
+                WebSocketResponseMessage errorMessage = new WebSocketResponseMessage("error", new String(bytes, StandardCharsets.UTF_8));
                 session.sendMessage(new TextMessage(objectMapper.writeValueAsBytes(errorMessage)));
             } else {
                 byte[] bytes = new byte[inputStream.available()];
                 inputStream.read(bytes);
-                WebSocketMessage successMessage = new WebSocketMessage("success", new String(bytes, StandardCharsets.UTF_8));
+                WebSocketResponseMessage successMessage = new WebSocketResponseMessage("success", new String(bytes, StandardCharsets.UTF_8));
                 session.sendMessage(new TextMessage(objectMapper.writeValueAsBytes(successMessage)));
             }
         } catch (Exception e) {

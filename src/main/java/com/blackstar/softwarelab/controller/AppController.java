@@ -12,7 +12,8 @@ import com.blackstar.softwarelab.entity.AppVersion;
 import com.blackstar.softwarelab.service.ContainerService;
 import com.blackstar.softwarelab.service.IAppService;
 import com.blackstar.softwarelab.service.IAppVersionService;
-import com.blackstar.softwarelab.service.ImageChecker;
+import com.blackstar.softwarelab.websocket.ImageChecker;
+import com.blackstar.softwarelab.websocket.WebSocketSessionAndCallback;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,27 +56,6 @@ public class AppController extends BaseController {
     }
 
 
-    @RequestMapping(method = RequestMethod.GET, value = "/{name}?op=download")
-    public boolean download(@PathVariable String name) {
-        App app = appService.getById(name);
-        if (app != null && app.getAdditionalInfo() != null) {
-            ObjectMapper objectMapper = new ObjectMapper();
-            try {
-                ContainerInfo containerInfo = objectMapper.readValue(app.getAdditionalInfo(), ContainerInfo.class);
-                String imageName = containerInfo.getImageName();
-                if (containerService.hasImage(imageName)) {
-                    return true;
-                } else {
-                    imageChecker.add(imageName, containerService.pullImage(imageName));
-                }
-            } catch (IOException e) {
-                log.error("get app additionalInfo error", e);
-                return false;
-            }
-            return true;
-        }
-        return false;
-    }
 
     //    @RequestMapping(method = RequestMethod.POST)
     public App add(App app) {

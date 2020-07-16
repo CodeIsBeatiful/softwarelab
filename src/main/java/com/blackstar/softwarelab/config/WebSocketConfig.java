@@ -1,8 +1,11 @@
 package com.blackstar.softwarelab.config;
 
 import com.blackstar.softwarelab.security.SecurityUser;
+import com.blackstar.softwarelab.service.ContainerService;
 import com.blackstar.softwarelab.service.ISysUserService;
-import com.blackstar.softwarelab.websocket.SlWebSocketHandler;
+import com.blackstar.softwarelab.websocket.ImageChecker;
+import com.blackstar.softwarelab.websocket.MessageWebSocketHandler;
+import com.blackstar.softwarelab.websocket.TerminalWebSocketHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,11 +26,21 @@ import java.util.Map;
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
 
-    public static final String WS_PLUGIN_PREFIX = "/api/ws/";
-    private static final String WS_PLUGIN_MAPPING = WS_PLUGIN_PREFIX + "**";
+    public static final String WS_PREFIX = "/api/ws/";
+
+    private static final String WS_TERMINAL_MAPPING = WS_PREFIX + "/terminal/*";
+
+    private static final String WS_MESSAGE_MAPPING = WS_PREFIX + "/message";
 
     @Autowired
     private ISysUserService userService;
+
+    @Autowired
+    private ContainerService containerService;
+
+    @Autowired
+    private ImageChecker imageChecker;
+
 
     @Bean
     public ServletServerContainerFactoryBean createWebSocketContainer() {
@@ -39,7 +52,9 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(wsHandler(), WS_PLUGIN_MAPPING).setAllowedOrigins("*")
+        registry.addHandler(newTerminalHandler(), WS_TERMINAL_MAPPING)
+                .addHandler(newMessageHandler(), WS_MESSAGE_MAPPING)
+                .setAllowedOrigins("*")
                 .addInterceptors(new HttpSessionHandshakeInterceptor(), new HandshakeInterceptor() {
 
                     @Override
@@ -57,17 +72,22 @@ public class WebSocketConfig implements WebSocketConfigurer {
                     @Override
                     public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
                                                Exception exception) {
-                        //Do nothing
+                        //do nothing
                     }
                 });
     }
 
     @Bean
-    public WebSocketHandler wsHandler() {
-        return new SlWebSocketHandler();
+    public TerminalWebSocketHandler newTerminalHandler() {
+        return new TerminalWebSocketHandler();
     }
 
-    protected SecurityUser getCurrentUser()  {
+    @Bean
+    public MessageWebSocketHandler newMessageHandler() {
+        return new MessageWebSocketHandler(imageChecker, containerService);
+    }
+
+    protected SecurityUser getCurrentUser() {
         //TODO mock data
 //        SysUser user = userService.getById("205635b9-ab37-43cb-82c2-811a58880fa1");
 //        return SecurityUser.builder()
