@@ -10,18 +10,26 @@ import com.blackstar.softwarelab.service.IPortService;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.async.ResultCallback;
 import com.github.dockerjava.api.command.CreateContainerResponse;
+import com.github.dockerjava.api.command.ExecCreateCmdResponse;
+import com.github.dockerjava.api.command.InspectExecResponse;
 import com.github.dockerjava.api.model.*;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
-import com.github.dockerjava.core.DockerClientBuilder;
+import com.github.dockerjava.core.DockerClientImpl;
+import com.github.dockerjava.core.command.ExecStartResultCallback;
+import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
+import com.github.dockerjava.transport.DockerHttpClient;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.*;
 
 @Slf4j
 @Service
-public class DockerServiceImpl implements ContainerService {
+public class DockerContainerServiceImpl implements ContainerService {
 
     private DockerClient dockerClient;
 
@@ -29,7 +37,7 @@ public class DockerServiceImpl implements ContainerService {
     private IPortService portService;
 
 
-    public DockerServiceImpl() {
+    public DockerContainerServiceImpl() {
         initClient();
     }
 
@@ -39,8 +47,12 @@ public class DockerServiceImpl implements ContainerService {
                 .withDockerHost("unix:///var/run/docker.sock")
 //                .withRegistryUrl("https://index.docker.io/v1/")
                 .build();
+        DockerHttpClient httpClient = new ApacheDockerHttpClient.Builder()
+                .dockerHost(config.getDockerHost())
+                .sslConfig(config.getSSLConfig())
+                .build();
 
-
+        dockerClient = DockerClientImpl.getInstance(config, httpClient);
 //        DockerHttpClient httpClient = new ApacheDockerHttpClient.Builder()
 //                .dockerHost(config.getDockerHost())
 //                .sslConfig(config.getSSLConfig())
@@ -50,8 +62,8 @@ public class DockerServiceImpl implements ContainerService {
 //                .withReadTimeout(1000)
 //                .withConnectTimeout(1000);
 
-        dockerClient = DockerClientBuilder.getInstance(config)
-                .build();
+//        dockerClient = DockerClientBuilder.getInstance(config)
+//                .build();
     }
 
 
@@ -216,12 +228,44 @@ public class DockerServiceImpl implements ContainerService {
     }
 
     @Override
-    public ResultCallback.Adapter<PullResponseItem> pullImage(String imageName) {
-        return dockerClient.pullImageCmd(imageName).start();
+    public PullImageCallback pullImage(String imageName) {
+        return dockerClient.pullImageCmd(imageName).exec(new PullImageCallback());
     }
 
     @Override
     public void removeImage(String imageName) {
         dockerClient.removeImageCmd(imageName).exec();
     }
+
+    public ExecStartResultCallback runCommand(String containerId,String command,OutputStream outputStream){
+
+        ExecCreateCmdResponse execCreateCmdResponse = dockerClient.execCreateCmd(containerId)
+                .withAttachStdout(true)
+                .withCmd(command.split(" "))
+                .withUser("root")
+                .exec();
+        return dockerClient.execStartCmd(execCreateCmdResponse.getId())
+                .exec(new ExecStartResultCallback(outputStream, outputStream));
+
+    }
+
+    public static class AttachContainerCallback extends ResultCallback.Adapter<Frame> {
+        private StringBuffer log = new StringBuffer();
+
+        @Override
+        public void onNext(Frame item) {
+            log.append(new String(item.getPayload()));
+            super.onNext(item);
+        }
+
+        @Override
+        public String toString() {
+            return log.toString();
+        }
+    }
+
+    public static class PullImageCallback extends ResultCallback.Adapter<PullResponseItem> {
+
+    }
+
 }

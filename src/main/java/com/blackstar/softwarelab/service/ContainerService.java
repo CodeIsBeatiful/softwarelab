@@ -1,13 +1,17 @@
 package com.blackstar.softwarelab.service;
 
 
-import com.blackstar.softwarelab.bean.ContainerInfo;
-import com.blackstar.softwarelab.common.KeyValuePair;
-import com.blackstar.softwarelab.exception.PortException;
-import com.github.dockerjava.api.async.ResultCallback;
-import com.github.dockerjava.api.model.PullResponseItem;
+        import com.blackstar.softwarelab.bean.ContainerInfo;
+        import com.blackstar.softwarelab.common.KeyValuePair;
+        import com.blackstar.softwarelab.exception.PortException;
+        import com.blackstar.softwarelab.service.impl.DockerContainerServiceImpl;
+        import com.github.dockerjava.api.async.ResultCallback;
+        import com.github.dockerjava.api.model.PullResponseItem;
+        import com.github.dockerjava.core.command.ExecStartResultCallback;
 
-import java.util.List;
+        import java.io.InputStream;
+        import java.io.OutputStream;
+        import java.util.List;
 
 public interface ContainerService {
 
@@ -29,7 +33,9 @@ public interface ContainerService {
 
     boolean hasImage(String imageName);
 
-    ResultCallback.Adapter<PullResponseItem> pullImage(String imageName);
+    DockerContainerServiceImpl.PullImageCallback pullImage(String imageName);
 
     void removeImage(String imageName);
+
+    ExecStartResultCallback runCommand(String containerId, String command, OutputStream outputStream);
 }

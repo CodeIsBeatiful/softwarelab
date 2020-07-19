@@ -7,12 +7,21 @@ import org.slf4j.LoggerFactory;
 import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 
 @ClientEndpoint
 public class WebSocketClient {
     private static Logger logger = LoggerFactory.getLogger(WebSocketClient.class);
     private Session session;
+
+    private ConcurrentLinkedQueue<String> queue = new ConcurrentLinkedQueue<>();
+
+    public String getMessage(){
+        return queue.poll();
+    }
+
+
 
     @OnOpen
     public void open(Session session) {
@@ -22,6 +31,7 @@ public class WebSocketClient {
 
     @OnMessage
     public void onMessage(String message) {
+        queue.add(message);
         logger.info("Server send message: " + message);
     }
 

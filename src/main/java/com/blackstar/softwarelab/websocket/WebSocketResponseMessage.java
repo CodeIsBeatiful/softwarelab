@@ -18,4 +18,11 @@ public class WebSocketResponseMessage {
     private String type;
 
     private String detail;
+
+
+    public static class Type {
+        public static final String SUCCESS = "success";
+
+        public static final String FAILED = "failed";
+    }
 }

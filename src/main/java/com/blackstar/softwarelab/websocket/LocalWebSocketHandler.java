@@ -1,30 +1,19 @@
 package com.blackstar.softwarelab.websocket;
 
 
-import com.blackstar.softwarelab.service.ContainerService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.ConcurrentHashMap;
 
-public class TerminalWebSocketHandler extends TextWebSocketHandler {
+public class LocalWebSocketHandler extends TextWebSocketHandler {
 
-    private final ContainerService containerService;
 
     private ObjectMapper objectMapper = new ObjectMapper();
-
-    private ConcurrentHashMap<String, String> map = new ConcurrentHashMap<>();
-
-    public TerminalWebSocketHandler(ContainerService containerService) {
-        this.containerService = containerService;
-    }
 
 
     @Override
@@ -37,15 +26,29 @@ public class TerminalWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        String command = message.getPayload();
-        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
-            //todo check container is exist and running
-            //todo may be use instance id, get container id from db
-            String path = session.getUri().getPath();
-            String containerId = path.substring(path.lastIndexOf("/")+1);
-            containerService.runCommand(containerId, command, byteArrayOutputStream).awaitCompletion();
-            WebSocketResponseMessage successMessage = new WebSocketResponseMessage("success", new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8));
-            session.sendMessage(new TextMessage(objectMapper.writeValueAsBytes(successMessage)));
+        Process process = null;
+        try {
+            process = Runtime.getRuntime().exec(new String[]{"bash", "-c", message.getPayload()});
+            process.waitFor();
+            InputStream inputStream = process.getInputStream();
+            InputStream errorStream = process.getErrorStream();
+            if (errorStream.available() > 0) {
+                byte[] bytes = new byte[errorStream.available()];
+                errorStream.read(bytes);
+                WebSocketResponseMessage errorMessage = new WebSocketResponseMessage("error", new String(bytes, StandardCharsets.UTF_8));
+                session.sendMessage(new TextMessage(objectMapper.writeValueAsBytes(errorMessage)));
+            } else {
+                byte[] bytes = new byte[inputStream.available()];
+                inputStream.read(bytes);
+                WebSocketResponseMessage successMessage = new WebSocketResponseMessage("success", new String(bytes, StandardCharsets.UTF_8));
+                session.sendMessage(new TextMessage(objectMapper.writeValueAsBytes(successMessage)));
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        } finally {
+            if (process != null) {
+                process.destroy();
+            }
         }
 
 

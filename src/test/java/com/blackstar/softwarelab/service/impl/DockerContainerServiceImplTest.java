@@ -6,10 +6,12 @@ import com.blackstar.softwarelab.exception.PortException;
 import com.github.dockerjava.api.async.ResultCallback;
 import com.github.dockerjava.api.model.Container;
 import com.github.dockerjava.api.model.PullResponseItem;
+import com.github.dockerjava.core.command.ExecStartResultCallback;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -20,22 +22,22 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.Assert.*;
 
 
-public class DockerServiceImplTest extends AbstractBaseTest {
+public class DockerContainerServiceImplTest extends AbstractBaseTest {
 
 
     @Autowired
-    private DockerServiceImpl dockerServiceImpl;
+    private DockerContainerServiceImpl dockerContainerServiceImpl;
 
     private ContainerInfo containerInfo;
 
     private int port;
 
     @Before
-    public void setUp() throws Exception{
+    public void setUp() throws Exception {
         port = 5444;
         List<String> ports = new ArrayList<>();
         //machine 5444, container inner port 5432
-        ports.add(port+":5432");
+        ports.add(port + ":5432");
         List<String> labels = new ArrayList<>();
         labels.add("user:admin");
         List<String> envs = new ArrayList<>();
@@ -51,14 +53,14 @@ public class DockerServiceImplTest extends AbstractBaseTest {
 
 
     @Test
-    public void testStartAndStop(){
+    public void testStartAndStop() {
         try {
-            dockerServiceImpl.start(containerInfo);
+            dockerContainerServiceImpl.start(containerInfo);
         } catch (PortException e) {
             e.printStackTrace();
         }
         //get container
-        Container container = dockerServiceImpl.getContainer(containerInfo);
+        Container container = dockerContainerServiceImpl.getContainer(containerInfo);
         assertNotNull(container);
         try {
             TimeUnit.SECONDS.sleep(5);
@@ -70,43 +72,62 @@ public class DockerServiceImplTest extends AbstractBaseTest {
         } finally {
 //        dockerServiceImpl.checkStatus(containerInfo);
             System.out.println(containerInfo.getStatus());
-            dockerServiceImpl.stop(containerInfo);
+            dockerContainerServiceImpl.stop(containerInfo);
             Connection newConn = getConn(port);
             assertNull(newConn);
-            dockerServiceImpl.remove(containerInfo);
+            dockerContainerServiceImpl.remove(containerInfo);
 //        dockerServiceImpl.get(containerInfo);
         }
 
 
-
     }
 
 
     @Test
-    public void testImage(){
-        assertTrue(dockerServiceImpl.hasImage("postgres:9.6"));
+    public void testImage() {
+        assertTrue(dockerContainerServiceImpl.hasImage("postgres:9.6"));
     }
 
     @Test
-    public void testPullImage(){
+    public void testPullImage() {
         String imageName = "hello-world:latest";
-        ResultCallback.Adapter<PullResponseItem> responseItemAdapter = dockerServiceImpl.pullImage(imageName);
+        ResultCallback.Adapter<PullResponseItem> responseItemAdapter = dockerContainerServiceImpl.pullImage(imageName);
         try {
             assertTrue(responseItemAdapter.awaitCompletion(60, TimeUnit.SECONDS));
-            dockerServiceImpl.removeImage(imageName);
-            assertFalse(dockerServiceImpl.hasImage(imageName));
+            dockerContainerServiceImpl.removeImage(imageName);
+            assertFalse(dockerContainerServiceImpl.hasImage(imageName));
 
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
-    private Connection getConn(int port){
+    @Test
+    public void testRunCommand() {
+
+        try (
+
+                final ByteArrayOutputStream out = new ByteArrayOutputStream()
+        ) {
+            String command = "ls -al";
+            ExecStartResultCallback execStartResultCallback = dockerContainerServiceImpl.runCommand("3c7ee75c286d", command, out);
+            execStartResultCallback.awaitCompletion();
+            System.out.println(new String(out.toByteArray()));
+        } catch (IOException e) {
+            e.printStackTrace();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Connection getConn(int port) {
         Connection conn = null;
         try {
             Class.forName("org.postgresql.Driver");
             conn = DriverManager
-                    .getConnection("jdbc:postgresql://localhost:"+port+"/postgres",
+                    .getConnection("jdbc:postgresql://localhost:" + port + "/postgres",
                             "postgres", "postgres");
 
 
@@ -119,7 +140,7 @@ public class DockerServiceImplTest extends AbstractBaseTest {
         }
     }
 
-    private void closeConn(Connection conn){
+    private void closeConn(Connection conn) {
         if (conn != null) {
             try {
                 conn.close();

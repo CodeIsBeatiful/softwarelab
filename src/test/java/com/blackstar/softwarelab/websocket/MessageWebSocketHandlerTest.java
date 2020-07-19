@@ -3,6 +3,7 @@ package com.blackstar.softwarelab.websocket;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,12 +37,10 @@ public class MessageWebSocketHandlerTest {
                 .build();
         try {
             webSocketClient.send(objectMapper.writeValueAsString(webSocketRequestMessage));
+            TimeUnit.SECONDS.sleep(30);
+            Assert.assertNotNull(webSocketClient.getMessage());
         } catch (JsonProcessingException e) {
             e.printStackTrace();
-        }
-
-        try {
-            TimeUnit.SECONDS.sleep(60);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

@@ -63,7 +63,7 @@ public class ImageChecker {
                     //use websocket
                     WebSocketSession webSocketSession = webSessionAndCallback.getWebSocketSession();
                     if (webSocketSession.isOpen()) {
-                        WebSocketResponseMessage successMessage = new WebSocketResponseMessage("success", imageName + "下载完毕");
+                        WebSocketResponseMessage successMessage = new WebSocketResponseMessage("success", imageName + "下载完成");
                         webSocketSession.sendMessage(new TextMessage(objectMapper.writeValueAsBytes(successMessage)));
                     }
                 }

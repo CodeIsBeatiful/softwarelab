@@ -79,7 +79,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Bean
     public TerminalWebSocketHandler newTerminalHandler() {
-        return new TerminalWebSocketHandler();
+        return new TerminalWebSocketHandler(containerService);
     }
 
     @Bean
