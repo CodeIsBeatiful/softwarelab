@@ -17,7 +17,7 @@ public class TerminalWebSocketHandlerTest {
 
     private WebSocketClient webSocketClient;
 
-    private String url="ws://localhost:8080/api/ws/terminal/3c7ee75c286d";
+    private String url="ws://localhost:8080/api/ws/terminal/b66188e0-ca2e-4afa-9a9f-a17553f9020e";
 
     @Before
     public void init() {

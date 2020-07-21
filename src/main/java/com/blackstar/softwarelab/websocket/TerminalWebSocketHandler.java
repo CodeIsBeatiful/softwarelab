@@ -1,7 +1,11 @@
 package com.blackstar.softwarelab.websocket;
 
 
+import com.blackstar.softwarelab.bean.ContainerInfo;
+import com.blackstar.softwarelab.common.DbConst;
+import com.blackstar.softwarelab.entity.Instance;
 import com.blackstar.softwarelab.service.ContainerService;
+import com.blackstar.softwarelab.service.IInstanceService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -18,12 +22,15 @@ public class TerminalWebSocketHandler extends TextWebSocketHandler {
 
     private final ContainerService containerService;
 
+    private final IInstanceService instanceService;
+
     private ObjectMapper objectMapper = new ObjectMapper();
 
     private ConcurrentHashMap<String, String> map = new ConcurrentHashMap<>();
 
-    public TerminalWebSocketHandler(ContainerService containerService) {
+    public TerminalWebSocketHandler(IInstanceService instanceService, ContainerService containerService) {
         this.containerService = containerService;
+        this.instanceService = instanceService;
     }
 
 
@@ -39,16 +46,16 @@ public class TerminalWebSocketHandler extends TextWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String command = message.getPayload();
         try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
-            //todo check container is exist and running
-            //todo may be use instance id, get container id from db
             String path = session.getUri().getPath();
-            String containerId = path.substring(path.lastIndexOf("/")+1);
+            String instanceId = path.substring(path.lastIndexOf("/") + 1);
+            Instance instance = instanceService.getById(instanceId);
+            ContainerInfo containerInfo = objectMapper.readValue(instance.getAdditionalInfo(), ContainerInfo.class);
+            String containerId = containerInfo.getId();
+            //todo
             containerService.runCommand(containerId, command, byteArrayOutputStream).awaitCompletion();
-            WebSocketResponseMessage successMessage = new WebSocketResponseMessage("success", new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8));
+            WebSocketResponseMessage successMessage = new WebSocketResponseMessage(WebSocketResponseMessage.Type.SUCCESS, new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8));
             session.sendMessage(new TextMessage(objectMapper.writeValueAsBytes(successMessage)));
         }
-
-
     }
 
 
