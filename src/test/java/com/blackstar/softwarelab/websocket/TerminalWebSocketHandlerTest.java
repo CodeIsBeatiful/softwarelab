@@ -31,6 +31,7 @@ public class TerminalWebSocketHandlerTest {
             webSocketClient.send("ls -al");
             TimeUnit.SECONDS.sleep(5);
             System.out.println(webSocketClient.getMessage());
+            System.out.println(webSocketClient.getMessage());
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

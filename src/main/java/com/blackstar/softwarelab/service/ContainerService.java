@@ -1,17 +1,14 @@
 package com.blackstar.softwarelab.service;
 
 
-        import com.blackstar.softwarelab.bean.ContainerInfo;
-        import com.blackstar.softwarelab.common.KeyValuePair;
-        import com.blackstar.softwarelab.exception.PortException;
-        import com.blackstar.softwarelab.service.impl.DockerContainerServiceImpl;
-        import com.github.dockerjava.api.async.ResultCallback;
-        import com.github.dockerjava.api.model.PullResponseItem;
-        import com.github.dockerjava.core.command.ExecStartResultCallback;
+import com.blackstar.softwarelab.bean.ContainerInfo;
+import com.blackstar.softwarelab.common.KeyValuePair;
+import com.blackstar.softwarelab.exception.PortException;
+import com.blackstar.softwarelab.service.impl.DockerContainerServiceImpl;
+import com.github.dockerjava.core.command.ExecStartResultCallback;
 
-        import java.io.InputStream;
-        import java.io.OutputStream;
-        import java.util.List;
+import java.io.OutputStream;
+import java.util.List;
 
 public interface ContainerService {
 
