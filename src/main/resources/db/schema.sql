@@ -72,6 +72,14 @@ CREATE TABLE IF NOT EXISTS file
 );
 
 
+CREATE TABLE IF NOT EXISTS app_source
+(
+    version varchar(50)
+);
+
+
+
+
 
 
 

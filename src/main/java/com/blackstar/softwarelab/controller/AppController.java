@@ -4,7 +4,6 @@ package com.blackstar.softwarelab.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.blackstar.softwarelab.bean.ContainerInfo;
 import com.blackstar.softwarelab.common.BaseController;
 import com.blackstar.softwarelab.common.DbConst;
 import com.blackstar.softwarelab.entity.App;
@@ -13,13 +12,11 @@ import com.blackstar.softwarelab.service.ContainerService;
 import com.blackstar.softwarelab.service.IAppService;
 import com.blackstar.softwarelab.service.IAppVersionService;
 import com.blackstar.softwarelab.websocket.ImageChecker;
-import com.blackstar.softwarelab.websocket.WebSocketSessionAndCallback;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -114,10 +111,27 @@ public class AppController extends BaseController {
         return appVersionService.list(new QueryWrapper<AppVersion>().setEntity(new AppVersion().setAppName(name)));
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "?op=upgrade")
+    public boolean upgrade(){
+        //todo get new version and insert to db
+        return false;
+    }
+
+    @RequestMapping(method = RequestMethod.POST, value = "?op=load")
+    public boolean load(@RequestParam(name="file") MultipartFile file){
+        //check zip file and insert to db
+        return false;
+    }
+
+
+
+
     public AppVersion addVersion(AppVersion appVersion) {
         appVersionService.save(appVersion);
         return appVersion;
     }
+
+
 
 
 }
