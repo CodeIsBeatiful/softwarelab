@@ -7,9 +7,13 @@ import com.blackstar.softwarelab.entity.AppVersion;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.StandardOpenOption;
@@ -72,7 +76,7 @@ public class AppControllerTest extends AbstractBaseTest {
     }
 
     @Test
-    public void testVersion(){
+    public void testVersion() {
         appController.addVersion(appVersion);
         AppVersion version = appController.getVersion(this.app.getName(), this.appVersion.getVersion());
         assertNotNull(version);
@@ -80,9 +84,8 @@ public class AppControllerTest extends AbstractBaseTest {
     }
 
 
-
     @Test
-    public void testGetImage(){
+    public void testGetImage() {
 //        String id = "84c03026-166e-418c-9c33-0a02f5392020";
 //        App app = appController.get(id);
 //        app.setLogo(getImageBytes());
@@ -90,20 +93,36 @@ public class AppControllerTest extends AbstractBaseTest {
 //        appController.update(app);
     }
 
+    @Test
+    public void testUpgrade() {
+        appController.upgrade();
+    }
+    @Test
+    public void testLoad(){
+        String filePath = "/Users/blackstar/Downloads/softwarelab-source-0.0.1.zip";
+        try {
+            MultipartFile multipartFile = new MockMultipartFile("myfile",new FileInputStream(filePath));
+            appController.load(multipartFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 
 
-    public byte[] getImageBytes(){
-        File file = new File(this.getClass().getClassLoader().getResource(".").getPath()+ "/static/image/pg.png");
+    public byte[] getImageBytes() {
+        File file = new File(this.getClass().getClassLoader().getResource(".").getPath() + "/static/image/pg.png");
         assertTrue(file.exists());
-        try(FileChannel channel = FileChannel.open(file.toPath(), StandardOpenOption.READ)){
+        try (FileChannel channel = FileChannel.open(file.toPath(), StandardOpenOption.READ)) {
             ByteBuffer allocate = ByteBuffer.allocate((int) channel.size());
-             channel.read(allocate);
-             return allocate.array();
-        }catch (Exception e){
+            channel.read(allocate);
+            return allocate.array();
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
 
     }
+
 
 }

@@ -74,7 +74,11 @@ CREATE TABLE IF NOT EXISTS file
 
 CREATE TABLE IF NOT EXISTS app_source
 (
-    version varchar(50)
+    id         varchar(36) not null
+        constraint app_source_pk
+            primary key,
+    version    varchar(50),
+    repository varchar(100)
 );
 
 

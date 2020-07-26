@@ -8,13 +8,14 @@ import com.blackstar.softwarelab.common.BaseController;
 import com.blackstar.softwarelab.common.DbConst;
 import com.blackstar.softwarelab.entity.App;
 import com.blackstar.softwarelab.entity.AppVersion;
-import com.blackstar.softwarelab.service.ContainerService;
 import com.blackstar.softwarelab.service.IAppService;
+import com.blackstar.softwarelab.service.IAppSourceService;
 import com.blackstar.softwarelab.service.IAppVersionService;
-import com.blackstar.softwarelab.websocket.ImageChecker;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -37,14 +38,15 @@ public class AppController extends BaseController {
     private IAppService appService;
 
     @Autowired
+    private IAppSourceService appSourceService;
+
+    @Autowired
     private IAppVersionService appVersionService;
 
-
     @Autowired
-    private ContainerService containerService;
+    private RestTemplate restTemplate;
 
-    @Autowired
-    private ImageChecker imageChecker;
+    private ObjectMapper objectMapper = new ObjectMapper();
 
 
     @RequestMapping(method = RequestMethod.GET, value = "/{name}")
@@ -53,41 +55,10 @@ public class AppController extends BaseController {
     }
 
 
-
-    //    @RequestMapping(method = RequestMethod.POST)
-    public App add(App app) {
-        appService.save(app);
-        return app;
-    }
-
-    //    @RequestMapping(method = RequestMethod.PUT)
-    public App update(App app) {
-        appService.updateById(app);
-        return appService.getById(app.getName());
-    }
-
-    //    @RequestMapping(method = RequestMethod.DELETE, value = "/{name}")
-    public boolean remove(@PathVariable String name) {
-//        App app = new App();
-//        app.setId(id);
-//        UpdateWrapper<App> updateWrapper = new UpdateWrapper<>();
-//        updateWrapper.set(DbConst.COLUMN_STATUS, DbConst.STATUS_DELETE);
-//        return appService.update(app,updateWrapper);
-        return false;
-    }
-
-    public boolean delete(@PathVariable String name) {
-        return appService.removeById(name);
-    }
-
-
     @RequestMapping(method = RequestMethod.GET)
     public IPage<App> list(@RequestParam int pageNum, @RequestParam int pageSize) {
-
         Page<App> appPage = new Page<>(pageNum, pageSize);
-
         QueryWrapper<App> appQueryWrapper = new QueryWrapper<App>().eq(DbConst.COLUMN_STATUS, DbConst.STATUS_NORMAL);
-
         return appService.page(appPage, appQueryWrapper);
     }
 
@@ -112,26 +83,31 @@ public class AppController extends BaseController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "?op=upgrade")
-    public boolean upgrade(){
-        //todo get new version and insert to db
-        return false;
+    public boolean upgrade() {
+        return appSourceService.upgrade();
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "?op=load")
-    public boolean load(@RequestParam(name="file") MultipartFile file){
-        //check zip file and insert to db
-        return false;
+    public boolean load(@RequestParam(name = "file") MultipartFile file) {
+        return appSourceService.load(file);
     }
 
 
+    public App add(App app) {
+        appService.save(app);
+        return app;
+    }
+
+    public App update(App app) {
+        appService.updateById(app);
+        return appService.getById(app.getName());
+    }
 
 
     public AppVersion addVersion(AppVersion appVersion) {
         appVersionService.save(appVersion);
         return appVersion;
     }
-
-
 
 
 }
