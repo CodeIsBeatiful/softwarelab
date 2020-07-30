@@ -1,15 +1,15 @@
 #!/bin/sh
 
-# 项目名称
-APPLICATION="software-lab"
+# project name
+APPLICATION="@project.artifactId@"
 
-# 项目启动jar包名称
+# java file name
 APPLICATION_JAR="@build.finalName@.jar"
 
-# 停服
+# stop app
 echo stop ${APPLICATION} Application...
 sh shutdown.sh
 
-# 启动服务
+# start app
 echo start ${APPLICATION} Application...
 sh startup.sh

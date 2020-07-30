@@ -104,6 +104,21 @@
 <!--                <artifactId>spring-boot-maven-plugin</artifactId>-->
 <!--            </plugin>-->
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>com.blackstar.softwarelab.SoftwareLabApplication</mainClass>
+<!--                            <classpathPrefix></classpathPrefix>-->
+                            <addClasspath>true</addClasspath>
+                        </manifest>
+                    </archive>
+                    <includes>
+                    </includes>
+                </configuration>
+            </plugin>
+            <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.3.0</version>
                 <executions>
@@ -114,7 +129,7 @@
                             <goal>single</goal>
                         </goals>
                         <configuration>
-                            <finalName>${artifactId}</finalName>
+                            <finalName>${project.artifactId}</finalName>
                             <!-- This is where we use our shared assembly descriptor -->
                             <descriptors>
                                 <descriptor>src/main/assembly/assembly.xml</descriptor>
