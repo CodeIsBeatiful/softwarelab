@@ -3,7 +3,7 @@ package com.blackstar.softwarelab.controller;
 
 import com.blackstar.softwarelab.bean.ContainerInfo;
 import com.blackstar.softwarelab.common.BaseController;
-import com.blackstar.softwarelab.security.SecurityUser;
+import com.blackstar.softwarelab.bean.SecurityUser;
 import com.blackstar.softwarelab.service.IInstanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;

@@ -2,7 +2,7 @@ package com.blackstar.softwarelab.common;
 
 import com.blackstar.softwarelab.exception.ErrorCode;
 import com.blackstar.softwarelab.exception.ErrorResponse;
-import com.blackstar.softwarelab.security.SecurityUser;
+import com.blackstar.softwarelab.bean.SecurityUser;
 import com.blackstar.softwarelab.entity.SysUser;
 import com.blackstar.softwarelab.service.ISysUserService;
 import com.fasterxml.jackson.databind.ObjectMapper;

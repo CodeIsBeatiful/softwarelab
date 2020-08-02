@@ -1,4 +1,4 @@
-package com.blackstar.softwarelab.security;
+package com.blackstar.softwarelab.bean;
 
 
 import lombok.AllArgsConstructor;

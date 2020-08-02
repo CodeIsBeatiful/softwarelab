@@ -2,7 +2,6 @@ package com.blackstar.softwarelab.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.blackstar.softwarelab.entity.Instance;
-import com.blackstar.softwarelab.security.SecurityUser;
 
 /**
  * <p>

@@ -2,7 +2,7 @@ package com.blackstar.softwarelab.config;
 
 import com.blackstar.softwarelab.common.DbConst;
 import com.blackstar.softwarelab.entity.Instance;
-import com.blackstar.softwarelab.security.SecurityUser;
+import com.blackstar.softwarelab.bean.SecurityUser;
 import com.blackstar.softwarelab.service.ContainerService;
 import com.blackstar.softwarelab.service.IInstanceService;
 import com.blackstar.softwarelab.service.ISysUserService;
