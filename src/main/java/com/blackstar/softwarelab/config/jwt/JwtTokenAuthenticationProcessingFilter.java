@@ -1,9 +1,7 @@
 package com.blackstar.softwarelab.config.jwt;
 
 import com.blackstar.softwarelab.config.jwt.extractor.TokenExtractor;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
