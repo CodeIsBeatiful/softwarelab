@@ -3,6 +3,8 @@ package com.blackstar.softwarelab.service;
 import com.blackstar.softwarelab.entity.File;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * <p>
  *  服务类
@@ -13,4 +15,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IFileService extends IService<File> {
 
+    void writeAppLogoToResponse(String app, HttpServletResponse response);
 }
