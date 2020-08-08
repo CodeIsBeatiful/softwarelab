@@ -41,7 +41,6 @@ public class RestAuthenticationProvider implements AuthenticationProvider {
         if (sysUser == null) {
             throw new UsernameNotFoundException("user not found: " + username);
         }
-
         if (!encoder.matches(password, sysUser.getPassword())) {
             throw new BadCredentialsException("Authentication Failed. Username or Password not valid.");
         }

@@ -6,7 +6,7 @@ import com.blackstar.softwarelab.config.jwt.SkipPathRequestMatcher;
 import com.blackstar.softwarelab.config.jwt.extractor.TokenExtractor;
 import com.blackstar.softwarelab.config.rest.RestAuthenticationProvider;
 import com.blackstar.softwarelab.config.rest.RestLoginProcessingFilter;
-import com.blackstar.softwarelab.exception.ErrorResponseHandler;
+import com.blackstar.softwarelab.handler.ErrorResponseHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -41,7 +41,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     public static final String FORM_BASED_LOGIN_ENTRY_POINT = "/api/auth/login";
 
     public static final String TOKEN_REFRESH_ENTRY_POINT = "/api/auth/token";
-    protected static final String[] NON_TOKEN_BASED_AUTH_ENTRY_POINTS = new String[]{"/index.html", "/static/**", "/api/noauth/**", "/webjars/**", "/api/whiteLabel/**"};
+    protected static final String[] NON_TOKEN_BASED_AUTH_ENTRY_POINTS = new String[]{"/api/files/**","/index.html", "/static/**", "/api/noauth/**", "/webjars/**", "/api/whiteLabel/**"};
     public static final String TOKEN_BASED_AUTH_ENTRY_POINT = "/api/**";
     public static final String WS_TOKEN_BASED_AUTH_ENTRY_POINT = "/api/ws/**";
 

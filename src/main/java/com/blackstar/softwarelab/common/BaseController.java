@@ -1,14 +1,12 @@
 package com.blackstar.softwarelab.common;
 
-import com.blackstar.softwarelab.exception.ErrorCode;
-import com.blackstar.softwarelab.exception.ErrorResponse;
+import com.blackstar.softwarelab.bean.Code;
+import com.blackstar.softwarelab.bean.Response;
 import com.blackstar.softwarelab.bean.SecurityUser;
-import com.blackstar.softwarelab.entity.SysUser;
-import com.blackstar.softwarelab.service.ISysUserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -20,20 +18,11 @@ import java.io.IOException;
 public abstract class BaseController {
 
 
-    @Autowired
-    private ISysUserService userService;
-
     private ObjectMapper objectMapper = new ObjectMapper();
 
     public SecurityUser getSecurityUser() {
 
-        SysUser user = userService.getById("205635b9-ab37-43cb-82c2-811a58880fa1");
-
-        return SecurityUser.builder()
-                .id(user.getId())
-                .mail(user.getMail())
-                .username(user.getUsername())
-                .build();
+        return getCurrentUser();
     }
 
 
@@ -42,10 +31,20 @@ public abstract class BaseController {
         log.error(ex.getMessage());
         try {
             objectMapper.writeValue(response.getWriter(),
-                    ErrorResponse.of(ex.getMessage(),
-                            ErrorCode.GENERAL, HttpStatus.INTERNAL_SERVER_ERROR));
+                    Response.of(ex.getMessage(),
+                            Code.GENERAL, null));
         } catch (IOException e) {
-            log.error("Can't handle exception",e);
+            log.error("Can't handle exception", e);
+        }
+    }
+
+    protected SecurityUser getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof SecurityUser) {
+            return (SecurityUser) authentication.getPrincipal();
+        } else {
+            return null;
+//            throw new Exception("您无权进行此操作!", Code.AUTHENTICATION);
         }
     }
 

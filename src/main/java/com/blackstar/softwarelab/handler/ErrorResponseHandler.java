@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.blackstar.softwarelab.exception;
+package com.blackstar.softwarelab.handler;
 
+import com.blackstar.softwarelab.bean.Code;
+import com.blackstar.softwarelab.bean.Response;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,8 +48,8 @@ public class ErrorResponseHandler implements AccessDeniedHandler {
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             response.setStatus(HttpStatus.FORBIDDEN.value());
             mapper.writeValue(response.getWriter(),
-                    ErrorResponse.of("You don't have permission to perform this operation!",
-                            ErrorCode.PERMISSION_DENIED, HttpStatus.FORBIDDEN));
+                    Response.of("You don't have permission to perform this operation!",
+                            Code.PERMISSION_DENIED, null));
         }
     }
 
@@ -60,8 +62,8 @@ public class ErrorResponseHandler implements AccessDeniedHandler {
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
                 response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                mapper.writeValue(response.getWriter(), ErrorResponse.of(exception.getMessage(),
-                        ErrorCode.GENERAL, HttpStatus.INTERNAL_SERVER_ERROR));
+                mapper.writeValue(response.getWriter(), Response.of(exception.getMessage(),
+                        Code.GENERAL, null));
             } catch (IOException e) {
                 log.error("Can't handle exception", e);
             }

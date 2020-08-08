@@ -1,9 +1,10 @@
-package com.blackstar.softwarelab.exception;
+package com.blackstar.softwarelab.bean;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public enum ErrorCode {
+public enum Code {
 
+    SUCCESS(-1),
     GENERAL(2),
     AUTHENTICATION(10),
     JWT_TOKEN_EXPIRED(11),
@@ -11,15 +12,15 @@ public enum ErrorCode {
     INVALID_ARGUMENTS(30),
     BAD_REQUEST_PARAMS(31);
 
-    private int errorCode;
+    private int code;
 
-    ErrorCode(int errorCode) {
-        this.errorCode = errorCode;
+    Code(int code) {
+        this.code = code;
     }
 
     @JsonValue
-    public int getErrorCode() {
-        return errorCode;
+    public int getCode() {
+        return code;
     }
 
 }

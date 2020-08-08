@@ -1,5 +1,6 @@
 package com.blackstar.softwarelab.config.rest;
 
+import com.blackstar.softwarelab.bean.Response;
 import com.blackstar.softwarelab.bean.SecurityUser;
 import com.blackstar.softwarelab.config.jwt.JwtToken;
 import com.blackstar.softwarelab.config.jwt.JwtTokenFactory;
@@ -48,7 +49,8 @@ public class RestAwareAuthenticationSuccessHandler implements AuthenticationSucc
 
         response.setStatus(HttpStatus.OK.value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        mapper.writeValue(response.getWriter(), tokenMap);
+//        mapper.writeValue(response.getWriter(), tokenMap);
+        mapper.writeValue(response.getWriter(), Response.ofSuccess(tokenMap));
 
         clearAuthenticationAttributes(request);
     }

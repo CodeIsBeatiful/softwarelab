@@ -1,6 +1,6 @@
 package com.blackstar.softwarelab.config.rest;
 
-import com.blackstar.softwarelab.exception.ErrorResponseHandler;
+import com.blackstar.softwarelab.handler.ErrorResponseHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;

@@ -27,7 +27,7 @@ public class FileController extends BaseController {
     @Autowired
     private IFileService fileService;
 
-    @RequestMapping(value = "/logos/{app}")
+    @RequestMapping(value = "/logo/{app}")
     public void getLogo(@PathVariable("app") String app, HttpServletResponse response) {
         fileService.writeAppLogoToResponse(app, response);
     }
