@@ -3,6 +3,8 @@ package com.blackstar.softwarelab.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.blackstar.softwarelab.entity.App;
 
+import java.util.List;
+
 /**
  * <p>
  *  服务类
@@ -13,4 +15,5 @@ import com.blackstar.softwarelab.entity.App;
  */
 public interface IAppService extends IService<App> {
 
+    List<String> getNameByType(String type);
 }

@@ -6,6 +6,8 @@ import com.blackstar.softwarelab.mapper.AppMapper;
 import com.blackstar.softwarelab.service.IAppService;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * <p>
  *  服务实现类
@@ -18,7 +20,9 @@ import org.springframework.stereotype.Service;
 public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements IAppService {
 
 
-
-
+    @Override
+    public List<String> getNameByType(String type) {
+        return this.baseMapper.getNameByType(type);
+    }
 
 }

@@ -64,9 +64,9 @@ public class InstanceControllerTest extends AbstractBaseTest {
         assertNotNull(savedInstance.getId());
         assertNotNull(savedInstance.getName());
         //start container
-        assertTrue(operationController.start(this.instance.getId()));
+        assertTrue(operationController.operate(this.instance.getId(),"start"));
         //stop container
-        assertTrue(operationController.stop(this.instance.getId()));
+        assertTrue(operationController.operate(this.instance.getId(),"stop"));
         Instance stopedInstance = instanceController.get(this.instance.getId());
         System.out.println("instance stop status:"+stopedInstance.getStatus());
         //delete instance and remove container

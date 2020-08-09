@@ -71,6 +71,11 @@ public class AppController extends BaseController {
         return appService.page(appPage, appQueryWrapper);
     }
 
+    @RequestMapping(method = RequestMethod.GET, value = "/names")
+    public List<String> getNameByType(@RequestParam String type){
+        return appService.getNameByType(type);
+    }
+
 
     @RequestMapping(method = RequestMethod.GET, value = "/{name}/versions/{version}")
     public AppVersion getVersion(@PathVariable String name, @PathVariable String version) {

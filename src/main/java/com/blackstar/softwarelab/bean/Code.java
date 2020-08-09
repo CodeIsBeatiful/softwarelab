@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum Code {
 
-    SUCCESS(-1),
+    SUCCESS(0),
     GENERAL(2),
     AUTHENTICATION(10),
     JWT_TOKEN_EXPIRED(11),

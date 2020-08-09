@@ -6,10 +6,7 @@ import com.blackstar.softwarelab.common.BaseController;
 import com.blackstar.softwarelab.bean.SecurityUser;
 import com.blackstar.softwarelab.service.IInstanceService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -22,35 +19,18 @@ public class InstanceOperationController extends BaseController {
     private IInstanceService instanceService;
 
 
-
-    @RequestMapping(method = RequestMethod.GET,value = "")
-    public List<ContainerInfo> list(){
+    @RequestMapping(method = RequestMethod.POST, value = "/{id}")
+    public boolean operate(@PathVariable String id, @RequestParam String op) {
         SecurityUser securityUser = getSecurityUser();
-
-        return null;
-    }
-
-
-
-    @RequestMapping(method = RequestMethod.POST,value = "{id}?op=start")
-    public boolean start(@PathVariable String id){
-        SecurityUser securityUser = getSecurityUser();
-
-        return instanceService.start(securityUser.getId(),id);
-    }
-
-
-    @RequestMapping(method = RequestMethod.POST,value = "{id}?op=stop")
-    public boolean stop(@PathVariable String id){
-        SecurityUser securityUser = getSecurityUser();
-        return instanceService.stop(securityUser.getId(),id);
+        if (op.equals("start")) {
+            return instanceService.start(securityUser.getId(), id);
+        } else if (op.equals("stop")) {
+            return instanceService.stop(securityUser.getId(), id);
+        } else {
+            throw new RuntimeException("op is not supported");
+        }
 
     }
-
-
-
-
-
 
 
 }
