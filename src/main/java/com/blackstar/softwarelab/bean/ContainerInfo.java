@@ -6,7 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
-
+/**
+ *  Serialization for the Instance additionalInfo property
+ */
 @AllArgsConstructor
 @NoArgsConstructor
 @Data

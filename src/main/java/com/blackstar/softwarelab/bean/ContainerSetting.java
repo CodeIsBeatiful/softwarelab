@@ -6,6 +6,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ *  Serialization for the App and AppVersion additionalInfo property
+ */
 @AllArgsConstructor
 @NoArgsConstructor
 @Data

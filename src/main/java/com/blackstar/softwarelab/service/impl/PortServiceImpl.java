@@ -59,6 +59,11 @@ public class PortServiceImpl implements IPortService {
                 ContainerInfo containerInfo = objectMapper.readValue(instance.getAdditionalInfo(), ContainerInfo.class);
                 List<String> ports = containerInfo.getPorts();
                 ports.forEach(str -> {
+                    String portStr = str.split(":")[0];
+                    //if auto generate port
+                    if(portStr.length() == 0){
+                        return;
+                    }
                     usedPorts.add(Integer.parseInt(str.split(":")[0]));
                 });
             } catch (IOException e) {

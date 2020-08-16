@@ -2,6 +2,9 @@ package com.blackstar.softwarelab.mapper;
 
 import com.blackstar.softwarelab.entity.AppVersion;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,9 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface AppVersionMapper extends BaseMapper<AppVersion> {
 
+    @Select({"<script>",
+            "select version from app_version",
+            " where app_name = #{name}",
+            "</script>"})
+    List<AppVersion> getSimpleByAppName(String appName);
 }

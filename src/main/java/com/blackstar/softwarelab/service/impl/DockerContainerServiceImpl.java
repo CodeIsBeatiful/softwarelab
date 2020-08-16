@@ -74,7 +74,7 @@ public class DockerContainerServiceImpl implements ContainerService {
         if (container == null) {
             String imageName = containerInfo.getImageName();
             Map<String,String> labelMap = getLabelMap(containerInfo.getLabels());
-            List<PortBinding> portBindings = getPortBinds(containerInfo.getPorts());
+            List<PortBinding> portBindings = getPortBinds(containerInfo);
             CreateContainerResponse createContainer = dockerClient.createContainerCmd(imageName)
                     .withName(containerInfo.getName())
                     .withLabels(labelMap)
@@ -106,16 +106,21 @@ public class DockerContainerServiceImpl implements ContainerService {
         return labelMap;
     }
 
-    private List<PortBinding> getPortBinds(List<String> ports) throws PortException{
+    private List<PortBinding> getPortBinds(ContainerInfo containerInfo) throws PortException{
+        List<String> ports = containerInfo.getPorts();
         List<PortBinding> portBindings = new ArrayList<>();
-        for (String port : ports) {
+        for (int i = 0; i < ports.size(); i++) {
+            String port = ports.get(i);
             String[] portMap = port.split(":");
             String bindPort = portMap[0];
             int exposePort = Integer.parseInt(portMap[1]);
             //e.g. :8080
             if (bindPort.length() == 0) {
+                int randomPort = portService.getRandomPort();
                 bindPort = portService.getRandomPort() + "";
+                ports.set(i,randomPort+":"+portMap[1]);
             }
+            //todo need to set random port
             portBindings.add(new PortBinding(new Ports.Binding(null,bindPort),new ExposedPort(exposePort)));
         }
         return portBindings;

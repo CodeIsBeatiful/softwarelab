@@ -16,4 +16,6 @@ import java.util.List;
 public interface IAppService extends IService<App> {
 
     List<String> getNameByType(String type);
+
+    App getByName(String name);
 }

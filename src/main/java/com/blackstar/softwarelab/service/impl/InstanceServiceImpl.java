@@ -7,6 +7,7 @@ import com.blackstar.softwarelab.bean.ContainerInfo;
 import com.blackstar.softwarelab.bean.ContainerSetting;
 import com.blackstar.softwarelab.common.DbConst;
 import com.blackstar.softwarelab.entity.App;
+import com.blackstar.softwarelab.entity.AppVersion;
 import com.blackstar.softwarelab.entity.Instance;
 import com.blackstar.softwarelab.entity.SysUser;
 import com.blackstar.softwarelab.exception.PortException;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -43,6 +45,9 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
 
     @Autowired
     private IAppService appService;
+
+    @Autowired
+    private IAppVersionService appVersionService;
 
     @Autowired
     private IPortService portService;
@@ -108,9 +113,8 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
     @Override
     public void add(String userId, Instance instance) {
         SysUser user = userService.getById(userId);
-        App app = appService.getById(instance.getAppName());
         instance.setId(UUID.randomUUID().toString());
-        ContainerInfo containerInfo = generateContainerInfo(app, user, instance);
+        ContainerInfo containerInfo = generateContainerInfo(user, instance);
         try {
             instance.setAdditionalInfo(objectMapper.writeValueAsString(containerInfo));
             instance.setName(instance.getName());
@@ -118,6 +122,8 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
             LocalDateTime now = LocalDateTime.now();
             instance.setCreateTime(now);
             instance.setUpdateTime(now);
+            instance.setStatus(DbConst.STATUS_NORMAL);
+            instance.setRunningStatus(DbConst.RUNNING_STATUS_STOP);
             this.save(instance);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
@@ -148,34 +154,36 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
         return null;
     }
 
-    private ContainerInfo generateContainerInfo(App app, SysUser user, Instance instance) {
+    private ContainerInfo generateContainerInfo(SysUser user, Instance instance) {
+        App app = appService.getById(instance.getAppName());
+        AppVersion appVersion = appVersionService.getVersionByNameAndVersion(instance.getAppName(), instance.getAppVersion());
         ContainerInfo containerInfo = null;
         try {
+            //image name
             ContainerSetting containerSetting = objectMapper.readValue(app.getAdditionalInfo(), ContainerSetting.class);
-            if (containerSetting == null) {
-                return null;
-            }
-            containerInfo = objectMapper.readValue(instance.getAdditionalInfo(), ContainerInfo.class);
+            ContainerSetting versionContainerSetting = objectMapper.readValue(appVersion.getAdditionalInfo(), ContainerSetting.class);
+            String imageName = versionContainerSetting.getImageName() != null ? versionContainerSetting.getImageName()+":"+appVersion.getVersion() : containerSetting.getImageName();
             //sys labels
             List<String> sysLabels = Arrays.asList("appName:" + app.getName(), "appVersion:" + instance.getAppVersion(), "userId:" + user.getId());
+            containerInfo = objectMapper.readValue(instance.getAdditionalInfo(), ContainerInfo.class);
             if (containerInfo.getLabels() != null) {
                 sysLabels.addAll(containerInfo.getLabels());
             }
             containerInfo = ContainerInfo.builder()
-                    .imageName(containerSetting.getImageName())
+                    .imageName(imageName)
                     .name(instance.getId())
                     .ports(containerInfo.getPorts())
                     .labels(sysLabels)
-                    .envs(containerInfo.getEnvs())
+                    .envs(containerInfo.getEnvs() != null ? containerInfo.getEnvs() : new ArrayList<>())
                     .build();
 
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("generate container info error", e);
         }
         return containerInfo;
     }
 
-    private String generatorName(String username, String image) {
+    private String generateName(String username, String image) {
         StringBuilder sb = new StringBuilder();
         sb.append(username);
         String[] nameVersionStr = image.split(":");

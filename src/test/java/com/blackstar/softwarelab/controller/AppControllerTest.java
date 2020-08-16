@@ -75,13 +75,13 @@ public class AppControllerTest extends AbstractBaseTest {
 //        assertEquals(appController.delete(app.getId()), true);
     }
 
-    @Test
-    public void testVersion() {
-        appController.addVersion(appVersion);
-        AppVersion version = appController.getVersion(this.app.getName(), this.appVersion.getVersion());
-        assertNotNull(version);
-
-    }
+//    @Test
+//    public void testVersion() {
+//        appController.addVersion(appVersion);
+//        AppVersion version = appController.getVersion(this.app.getName(), this.appVersion.getVersion());
+//        assertNotNull(version);
+//
+//    }
 
 
     @Test

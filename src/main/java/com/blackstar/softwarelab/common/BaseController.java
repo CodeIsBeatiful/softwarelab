@@ -28,7 +28,7 @@ public abstract class BaseController {
 
     @ExceptionHandler(RuntimeException.class)
     public void handleRuntimeException(RuntimeException ex, HttpServletResponse response) {
-        log.error(ex.getMessage());
+        log.error("catch runtime exception:", ex);
         try {
             objectMapper.writeValue(response.getWriter(),
                     Response.of(ex.getMessage(),

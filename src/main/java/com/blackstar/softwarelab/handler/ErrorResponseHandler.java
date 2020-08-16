@@ -56,7 +56,7 @@ public class ErrorResponseHandler implements AccessDeniedHandler {
     public void handle(Exception exception, HttpServletResponse response) {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=utf-8");
-        log.debug("Processing exception {}", exception.getMessage(), exception);
+        log.info("Processing exception {}", exception.getMessage(), exception);
         if (!response.isCommitted()) {
             try {
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
@@ -64,7 +64,7 @@ public class ErrorResponseHandler implements AccessDeniedHandler {
                 response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
                 mapper.writeValue(response.getWriter(), Response.of(exception.getMessage(),
                         Code.GENERAL, null));
-            } catch (IOException e) {
+            } catch (Exception e) {
                 log.error("Can't handle exception", e);
             }
         }
