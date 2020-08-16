@@ -67,13 +67,12 @@ public class DockerContainerServiceImpl implements ContainerService {
     }
 
 
-
     public ContainerInfo start(ContainerInfo containerInfo) throws PortException {
         //get exist container
         Container container = getContainer(containerInfo);
         if (container == null) {
             String imageName = containerInfo.getImageName();
-            Map<String,String> labelMap = getLabelMap(containerInfo.getLabels());
+            Map<String, String> labelMap = getLabelMap(containerInfo.getLabels());
             List<PortBinding> portBindings = getPortBinds(containerInfo);
             CreateContainerResponse createContainer = dockerClient.createContainerCmd(imageName)
                     .withName(containerInfo.getName())
@@ -106,7 +105,7 @@ public class DockerContainerServiceImpl implements ContainerService {
         return labelMap;
     }
 
-    private List<PortBinding> getPortBinds(ContainerInfo containerInfo) throws PortException{
+    private List<PortBinding> getPortBinds(ContainerInfo containerInfo) throws PortException {
         List<String> ports = containerInfo.getPorts();
         List<PortBinding> portBindings = new ArrayList<>();
         for (int i = 0; i < ports.size(); i++) {
@@ -117,11 +116,11 @@ public class DockerContainerServiceImpl implements ContainerService {
             //e.g. :8080
             if (bindPort.length() == 0) {
                 int randomPort = portService.getRandomPort();
-                bindPort = portService.getRandomPort() + "";
-                ports.set(i,randomPort+":"+portMap[1]);
+                bindPort = randomPort + "";
+                ports.set(i, randomPort + ":" + portMap[1]);
             }
             //todo need to set random port
-            portBindings.add(new PortBinding(new Ports.Binding(null,bindPort),new ExposedPort(exposePort)));
+            portBindings.add(new PortBinding(new Ports.Binding(null, bindPort), new ExposedPort(exposePort)));
         }
         return portBindings;
     }
@@ -226,7 +225,7 @@ public class DockerContainerServiceImpl implements ContainerService {
     @Override
     public boolean hasImage(String imageName) {
         List<Image> images = dockerClient.listImagesCmd().withImageNameFilter(imageName).exec();
-        if(images == null || images.size() == 0) {
+        if (images == null || images.size() == 0) {
             return false;
         }
         return true;
@@ -242,7 +241,7 @@ public class DockerContainerServiceImpl implements ContainerService {
         dockerClient.removeImageCmd(imageName).exec();
     }
 
-    public ExecStartResultCallback runCommand(String containerId,String command,OutputStream outputStream){
+    public ExecStartResultCallback runCommand(String containerId, String command, OutputStream outputStream) {
 
         ExecCreateCmdResponse execCreateCmdResponse = dockerClient.execCreateCmd(containerId)
                 .withAttachStdout(true)
