@@ -5,8 +5,10 @@ import com.blackstar.softwarelab.exception.PortException;
 
 public interface IPortService {
 
-    public int getRandomPort() throws PortException;
+    int getRandomPort() throws PortException;
 
-    public boolean usePort(int port) ;
+    boolean usePort(int port) ;
+
+    void releasePort(int port);
 
 }

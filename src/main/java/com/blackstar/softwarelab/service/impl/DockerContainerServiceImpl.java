@@ -148,6 +148,10 @@ public class DockerContainerServiceImpl implements ContainerService {
 
     @Override
     public void remove(ContainerInfo containerInfo) {
+        List<String> ports = containerInfo.getPorts();
+        for (String portStr : ports) {
+            portService.releasePort(Integer.parseInt(portStr.split(":")[0]));
+        }
         removeById(containerInfo.getId());
     }
 

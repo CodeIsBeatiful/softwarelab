@@ -112,4 +112,10 @@ public class PortServiceImpl implements IPortService {
 
     }
 
+    @Override
+    public void releasePort(int port) {
+        synchronized (lock){
+            canUsePorts.add(port);
+        }
+    }
 }
