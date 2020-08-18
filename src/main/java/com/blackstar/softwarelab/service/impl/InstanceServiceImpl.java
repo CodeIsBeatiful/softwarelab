@@ -20,10 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * <p>
@@ -80,6 +77,7 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
                 UpdateWrapper<Instance> wrapper = new UpdateWrapper<Instance>()
                         .set(DbConst.COLUMN_RUNNING_STATUS,DbConst.RUNNING_STATUS_START)
                         .set(DbConst.COLUMN_ADDITIONAL_INFO, objectMapper.writeValueAsString(startContainerInfo))
+                        .set(DbConst.UPDATE_TIME,new Date())
                         .eq(DbConst.COLUMN_ID, instance.getId());
                 return this.update(wrapper);
             } catch (IOException e) {
@@ -102,6 +100,7 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
         }
         UpdateWrapper<Instance> wrapper = new UpdateWrapper<Instance>()
                 .set(DbConst.COLUMN_RUNNING_STATUS,DbConst.RUNNING_STATUS_STOP)
+                .set(DbConst.UPDATE_TIME,new Date())
                 .eq(DbConst.COLUMN_ID, instance.getId())
                 .eq(DbConst.COLUMN_USER_ID,userId);
         boolean updateFlag  = this.update(wrapper);
