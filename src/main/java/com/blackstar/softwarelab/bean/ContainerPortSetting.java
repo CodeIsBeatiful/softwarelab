@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 /**
  *  Serialization for the App and AppVersion additionalInfo property
  */
@@ -15,13 +13,18 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 @Builder
-public class ContainerSetting {
+public class ContainerPortSetting {
 
 
-    private String imageName;
-    //
-    private List<ContainerPortSetting> ports;
-    //e.g. /index.html
-    private String url;
+    private int port;
+
+    // http/mqtt
+    private String type;
+
+    // true/false
+    // Used when the type is http
+    private boolean entrance;
+    //description
+    private String desc;
 
 }

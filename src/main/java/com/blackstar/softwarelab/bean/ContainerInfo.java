@@ -6,8 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+
 /**
- *  Serialization for the Instance additionalInfo property
+ * Serialization for the Instance additionalInfo property
  */
 @AllArgsConstructor
 @NoArgsConstructor
@@ -33,8 +34,11 @@ public class ContainerInfo {
     //e.g. user=123456
     private List<String> envs;
 
+    //e.g. http://ip:port/index.html
+    private String url;
 
-    public ContainerInfo self(){
+
+    public ContainerInfo self() {
         return this;
     }
 
