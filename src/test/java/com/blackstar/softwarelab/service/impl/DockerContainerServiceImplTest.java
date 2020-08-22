@@ -2,6 +2,7 @@ package com.blackstar.softwarelab.service.impl;
 
 import com.blackstar.softwarelab.AbstractBaseTest;
 import com.blackstar.softwarelab.bean.ContainerInfo;
+import com.blackstar.softwarelab.bean.ContainerPortSetting;
 import com.blackstar.softwarelab.exception.PortException;
 import com.github.dockerjava.api.async.ResultCallback;
 import com.github.dockerjava.api.model.Container;
@@ -35,9 +36,9 @@ public class DockerContainerServiceImplTest extends AbstractBaseTest {
     @Before
     public void setUp() throws Exception {
         port = 5444;
-        List<String> ports = new ArrayList<>();
+        List<ContainerPortSetting> ports = new ArrayList<>();
         //machine 5444, container inner port 5432
-        ports.add(port + ":5432");
+        ports.add(ContainerPortSetting.builder().targetPort(port).port(5432).build());
         List<String> labels = new ArrayList<>();
         labels.add("user:admin");
         List<String> envs = new ArrayList<>();

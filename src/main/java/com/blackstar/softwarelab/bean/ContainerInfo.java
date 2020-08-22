@@ -1,5 +1,6 @@
 package com.blackstar.softwarelab.bean;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 @Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ContainerInfo {
 
 
@@ -26,7 +28,7 @@ public class ContainerInfo {
     private String status;
 
     //e.g. pg 5444:5432, :5432
-    private List<String> ports;
+    private List<ContainerPortSetting> ports;
 
     //e.g. user:abc
     private List<String> labels;

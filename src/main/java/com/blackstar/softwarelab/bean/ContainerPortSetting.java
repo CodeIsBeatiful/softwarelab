@@ -1,6 +1,7 @@
 package com.blackstar.softwarelab.bean;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,10 +14,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 @Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ContainerPortSetting {
 
 
     private int port;
+
+    private Integer targetPort;
 
     // http/mqtt
     private String type;

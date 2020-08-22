@@ -2,6 +2,7 @@ package com.blackstar.softwarelab.service.impl;
 
 
 import com.blackstar.softwarelab.bean.ContainerInfo;
+import com.blackstar.softwarelab.bean.ContainerPortSetting;
 import com.blackstar.softwarelab.common.ContainerStatusConst;
 import com.blackstar.softwarelab.common.KeyValuePair;
 import com.blackstar.softwarelab.exception.PortException;
@@ -106,21 +107,14 @@ public class DockerContainerServiceImpl implements ContainerService {
     }
 
     private List<PortBinding> getPortBinds(ContainerInfo containerInfo) throws PortException {
-        List<String> ports = containerInfo.getPorts();
+        List<ContainerPortSetting> ports = containerInfo.getPorts();
         List<PortBinding> portBindings = new ArrayList<>();
         for (int i = 0; i < ports.size(); i++) {
-            String port = ports.get(i);
-            String[] portMap = port.split(":");
-            String bindPort = portMap[0];
-            int exposePort = Integer.parseInt(portMap[1]);
-            //e.g. :8080
-            if (bindPort.length() == 0) {
-                int randomPort = portService.getRandomPort();
-                bindPort = randomPort + "";
-                ports.set(i, randomPort + ":" + portMap[1]);
+            ContainerPortSetting containerPortSetting = ports.get(i);
+            if(containerPortSetting.getTargetPort() == null){
+                containerPortSetting.setTargetPort(portService.getRandomPort());
             }
-            //todo need to set random port
-            portBindings.add(new PortBinding(new Ports.Binding(null, bindPort), new ExposedPort(exposePort)));
+            portBindings.add(new PortBinding(new Ports.Binding(null, containerPortSetting.getTargetPort().toString()), new ExposedPort(containerPortSetting.getPort())));
         }
         return portBindings;
     }
@@ -148,9 +142,9 @@ public class DockerContainerServiceImpl implements ContainerService {
 
     @Override
     public void remove(ContainerInfo containerInfo) {
-        List<String> ports = containerInfo.getPorts();
-        for (String portStr : ports) {
-            portService.releasePort(Integer.parseInt(portStr.split(":")[0]));
+        List<ContainerPortSetting> ports = containerInfo.getPorts();
+        for (ContainerPortSetting containerPortSetting : ports) {
+            portService.releasePort(containerPortSetting.getTargetPort());
         }
         removeById(containerInfo.getId());
     }

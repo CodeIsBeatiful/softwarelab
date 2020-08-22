@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.blackstar.softwarelab.bean.ContainerInfo;
+import com.blackstar.softwarelab.bean.ContainerPortSetting;
 import com.blackstar.softwarelab.bean.ContainerSetting;
 import com.blackstar.softwarelab.common.DbConst;
 import com.blackstar.softwarelab.entity.App;
@@ -74,6 +75,8 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
                 //解决与ContainerChecker修复冲突，start时确保instance相关容器启动完成后，才设置状态为RUNNING_STATUS_START，stop时，先设置RUNNING_STATUS_STOP状态，再stop容器
                 //TODO 可能需要check等待容器启动完毕后再写入状态
                 ContainerInfo startContainerInfo = containerService.start(containerInfo);
+                // generate entrance url
+                processUrl(startContainerInfo);
                 UpdateWrapper<Instance> wrapper = new UpdateWrapper<Instance>()
                         .set(DbConst.COLUMN_RUNNING_STATUS,DbConst.RUNNING_STATUS_START)
                         .set(DbConst.COLUMN_ADDITIONAL_INFO, objectMapper.writeValueAsString(startContainerInfo))
@@ -85,6 +88,18 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
             } catch (PortException e) {
                 throw new RuntimeException("instance port error",e);
             }
+        }
+    }
+
+    private void processUrl(ContainerInfo startContainerInfo) {
+        List<ContainerPortSetting> ports = startContainerInfo.getPorts();
+        if (ports != null && ports.size() > 0) {
+            ports.forEach(containerPortSetting -> {
+                if(containerPortSetting.getType().equals("http")&& containerPortSetting.isEntrance()){
+                    String url = startContainerInfo.getUrl() != null ? startContainerInfo.getUrl() : "";
+                    startContainerInfo.setUrl("http://localhost:"+containerPortSetting.getTargetPort()+url);
+                }
+            });
         }
     }
 

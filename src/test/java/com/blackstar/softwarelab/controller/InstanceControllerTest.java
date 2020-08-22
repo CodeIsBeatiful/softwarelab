@@ -2,6 +2,7 @@ package com.blackstar.softwarelab.controller;
 
 import com.blackstar.softwarelab.AbstractBaseTest;
 import com.blackstar.softwarelab.bean.ContainerInfo;
+import com.blackstar.softwarelab.bean.ContainerPortSetting;
 import com.blackstar.softwarelab.entity.Instance;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
@@ -48,7 +49,7 @@ public class InstanceControllerTest extends AbstractBaseTest {
         instance.setStatus(0);
 
         ContainerInfo containerInfo = ContainerInfo.builder()
-                .ports(Arrays.asList(mainPort + ":3000"))
+                .ports(Arrays.asList(ContainerPortSetting.builder().targetPort(mainPort).port(3000).build()))
                 .envs(new ArrayList<>())
                 .build();
         instance.setAdditionalInfo(new ObjectMapper().writeValueAsString(containerInfo));

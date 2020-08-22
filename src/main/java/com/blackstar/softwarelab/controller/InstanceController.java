@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.blackstar.softwarelab.bean.ContainerInfo;
+import com.blackstar.softwarelab.bean.ContainerPortSetting;
 import com.blackstar.softwarelab.bean.SortObj;
 import com.blackstar.softwarelab.common.BaseController;
 import com.blackstar.softwarelab.entity.Instance;
@@ -56,7 +57,7 @@ public class InstanceController extends BaseController {
                 throw new RuntimeException("instance additional info must not null");
             }
             ContainerInfo containerInfo = objectMapper.readValue(instance.getAdditionalInfo(), ContainerInfo.class);
-            List<String> ports = containerInfo.getPorts();
+            List<ContainerPortSetting> ports = containerInfo.getPorts();
             //check ports
             if (ports == null) {
                 throw new RuntimeException("container info mush have ports");

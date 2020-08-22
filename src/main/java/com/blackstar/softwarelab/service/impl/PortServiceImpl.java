@@ -1,6 +1,7 @@
 package com.blackstar.softwarelab.service.impl;
 
 import com.blackstar.softwarelab.bean.ContainerInfo;
+import com.blackstar.softwarelab.bean.ContainerPortSetting;
 import com.blackstar.softwarelab.entity.Instance;
 import com.blackstar.softwarelab.exception.PortException;
 import com.blackstar.softwarelab.service.IInstanceService;
@@ -57,14 +58,13 @@ public class PortServiceImpl implements IPortService {
         instances.forEach(instance -> {
             try {
                 ContainerInfo containerInfo = objectMapper.readValue(instance.getAdditionalInfo(), ContainerInfo.class);
-                List<String> ports = containerInfo.getPorts();
-                ports.forEach(str -> {
-                    String portStr = str.split(":")[0];
+                List<ContainerPortSetting> ports = containerInfo.getPorts();
+                ports.forEach(containerPortSetting -> {
                     //if auto generate port
-                    if(portStr.length() == 0){
+                    if(containerPortSetting.getTargetPort() == null){
                         return;
                     }
-                    usedPorts.add(Integer.parseInt(str.split(":")[0]));
+                    usedPorts.add(containerPortSetting.getTargetPort());
                 });
             } catch (IOException e) {
                 // do nothing
