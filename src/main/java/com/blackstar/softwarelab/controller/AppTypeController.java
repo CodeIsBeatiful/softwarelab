@@ -19,8 +19,12 @@ public class AppTypeController {
         ArrayList<KeyValuePair> keyValuePairs = new ArrayList<>();
         keyValuePairs.add(new KeyValuePair("All",""));
         keyValuePairs.add(new KeyValuePair("Util","Util"));
-        keyValuePairs.add(new KeyValuePair("DataBase","DataBase"));
+        keyValuePairs.add(new KeyValuePair("Database","Database"));
         keyValuePairs.add(new KeyValuePair("BI","BI"));
+        keyValuePairs.add(new KeyValuePair("Web","Web"));
+        keyValuePairs.add(new KeyValuePair("MQ","MQ"));
+        keyValuePairs.add(new KeyValuePair("Cache","Cache"));
+        keyValuePairs.add(new KeyValuePair("Other","Other"));
         return keyValuePairs;
     }
 
