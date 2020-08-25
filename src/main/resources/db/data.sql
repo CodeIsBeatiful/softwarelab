@@ -4,7 +4,7 @@ INSERT INTO app (name, author, type, description, create_time, update_time, stat
 -- table app source
 INSERT INTO app_source (id, version, repository) VALUES ('00000000-0000-0000-0000-000000000000', 'v0.0.0', null);
 -- table app version
-INSERT INTO app_version (app_name, version, additional_info, create_time, update_time, status) VALUES ('metabase', 'v0.35.4', null, '2020-06-28 14:42:39.298000', '2020-06-28 14:42:40.695000', 0);
-INSERT INTO app_version (app_name, version, additional_info, create_time, update_time, status) VALUES ('nginx', '1.19.2', null, '2020-06-28 14:42:39.298000', '2020-06-28 14:42:40.695000', 0);
+INSERT INTO app_version (app_name, version, additional_info, create_time, update_time, status, download_status) VALUES ('metabase', 'v0.35.4', null, '2020-06-28 14:42:39.298000', '2020-06-28 14:42:40.695000', 0, 1);
+INSERT INTO app_version (app_name, version, additional_info, create_time, update_time, status, download_status) VALUES ('nginx', '1.19.2', null, '2020-06-28 14:42:39.298000', '2020-06-28 14:42:40.695000', 0, 1);
 -- sys user
 INSERT INTO sys_user (id, username, password, mail, create_time, update_time, status) VALUES ('00000000-0000-0000-0000-000000000000', 'admin', '$2a$10$vFOaYBYNk3tkFOrZ2y5NMerpt2SuXZeshfOHiKvyEh4PSI9EseWzC', null, null, null, null);

@@ -2,7 +2,7 @@ spring:
   datasource:
     driver-class-name: org.h2.Driver
     schema: classpath:db/schema.sql
-    url: jdbc:h2:~/.softwarelab/data
+    url: jdbc:h2:~/.softwarelab/data;AUTO_SERVER=TRUE
     username: sa
     password: softwarelab
     console:

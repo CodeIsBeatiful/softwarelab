@@ -6,7 +6,7 @@ import com.blackstar.softwarelab.bean.SecurityUser;
 import com.blackstar.softwarelab.service.ContainerService;
 import com.blackstar.softwarelab.service.IInstanceService;
 import com.blackstar.softwarelab.service.ISysUserService;
-import com.blackstar.softwarelab.websocket.ImageChecker;
+import com.blackstar.softwarelab.checker.ImageChecker;
 import com.blackstar.softwarelab.websocket.MessageWebSocketHandler;
 import com.blackstar.softwarelab.websocket.TerminalWebSocketHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +36,6 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     private static final String WS_MESSAGE_MAPPING = WS_PREFIX + "/message";
 
-    @Autowired
-    private ISysUserService userService;
 
     @Autowired
     private ContainerService containerService;
@@ -112,14 +110,6 @@ public class WebSocketConfig implements WebSocketConfigurer {
     }
 
     protected SecurityUser getCurrentUser() {
-        //TODO mock data
-//        SysUser user = userService.getById("205635b9-ab37-43cb-82c2-811a58880fa1");
-//        return SecurityUser.builder()
-//                .id(user.getId())
-//                .mail(user.getMail())
-//                .username(user.getUsername())
-//                .build();
-
         return SecurityUser.builder().build();
     }
 }

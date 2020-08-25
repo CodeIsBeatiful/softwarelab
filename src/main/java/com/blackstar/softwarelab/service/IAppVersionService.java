@@ -20,4 +20,5 @@ public interface IAppVersionService extends IService<AppVersion> {
     List<AppVersion> getVersionsByAppName(String appName);
 
     AppVersion getVersionByNameAndVersion(String appName, String version);
+
 }

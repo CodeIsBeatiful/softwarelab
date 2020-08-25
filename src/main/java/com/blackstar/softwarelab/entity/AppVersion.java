@@ -39,5 +39,7 @@ public class AppVersion implements Serializable {
 
     private Integer status;
 
+    private String downloadStatus;
+
 
 }

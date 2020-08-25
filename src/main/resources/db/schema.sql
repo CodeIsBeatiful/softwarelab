@@ -35,6 +35,7 @@ CREATE TABLE IF NOT EXISTS app_version
     create_time     timestamp,
     update_time     timestamp,
     status          integer,
+    download_status integer,
     constraint app_version_pk
         primary key (app_name, version)
 );

@@ -1,4 +1,4 @@
-package com.blackstar.softwarelab.service;
+package com.blackstar.softwarelab.checker;
 
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -6,6 +6,8 @@ import com.blackstar.softwarelab.bean.ContainerInfo;
 import com.blackstar.softwarelab.common.ContainerStatusConst;
 import com.blackstar.softwarelab.common.DbConst;
 import com.blackstar.softwarelab.entity.Instance;
+import com.blackstar.softwarelab.service.ContainerService;
+import com.blackstar.softwarelab.service.IInstanceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
