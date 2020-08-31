@@ -1,9 +1,12 @@
 package com.blackstar.softwarelab.websocket;
 
 
+import com.blackstar.softwarelab.bean.ContainerSetting;
 import com.blackstar.softwarelab.checker.ImageChecker;
+import com.blackstar.softwarelab.entity.App;
 import com.blackstar.softwarelab.entity.AppVersion;
 import com.blackstar.softwarelab.service.ContainerService;
+import com.blackstar.softwarelab.service.IAppService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -19,11 +22,14 @@ public class MessageWebSocketHandler extends TextWebSocketHandler {
 
     private final ContainerService containerService;
 
+    private final IAppService appService;
+
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    public MessageWebSocketHandler(ImageChecker imageChecker, ContainerService containerService) {
+    public MessageWebSocketHandler(ImageChecker imageChecker, ContainerService containerService,IAppService appService) {
         this.imageChecker = imageChecker;
         this.containerService = containerService;
+        this.appService = appService;
     }
 
     @Override
@@ -74,10 +80,23 @@ public class MessageWebSocketHandler extends TextWebSocketHandler {
         AppVersion appVersion = AppVersion.builder().appName(split[0]).version(split[1]).build();
 
         WebSocketResponseMessage responseMessage = null;
-        if (!containerService.hasImage(appVersion.getAppName())) {
+        //todo get image from additional info
+        App app = appService.getByName(appVersion.getAppName());
+        String imageName = null;
+        try {
+            ContainerSetting containerSetting = objectMapper.readValue(app.getAdditionalInfo(), ContainerSetting.class);
+            imageName = containerSetting.getImageName();
+            if(imageName == null) {
+                responseMessage = new WebSocketResponseMessage("failed", content + "没有找到有效的镜像");
+                session.sendMessage(new TextMessage(objectMapper.writeValueAsBytes(responseMessage)));
+            }
+        } catch (IOException e) {
+            //do nothing
+        }
+        if (!containerService.hasImage(appVersion.getAppName()+":"+appVersion.getVersion())) {
             imageChecker.add(appVersion, WebSocketSessionAndCallback.builder()
                     .webSocketSession(session)
-                    .callback(containerService.pullImage(appVersion.getAppName()))
+                    .callback(containerService.pullImage(imageName+":"+appVersion.getVersion()))
                     .build());
             responseMessage = new WebSocketResponseMessage("success", content + "开始下载");
         } else {

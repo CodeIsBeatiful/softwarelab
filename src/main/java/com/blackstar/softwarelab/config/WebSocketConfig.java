@@ -1,12 +1,12 @@
 package com.blackstar.softwarelab.config;
 
+import com.blackstar.softwarelab.bean.SecurityUser;
+import com.blackstar.softwarelab.checker.ImageChecker;
 import com.blackstar.softwarelab.common.DbConst;
 import com.blackstar.softwarelab.entity.Instance;
-import com.blackstar.softwarelab.bean.SecurityUser;
 import com.blackstar.softwarelab.service.ContainerService;
+import com.blackstar.softwarelab.service.IAppService;
 import com.blackstar.softwarelab.service.IInstanceService;
-import com.blackstar.softwarelab.service.ISysUserService;
-import com.blackstar.softwarelab.checker.ImageChecker;
 import com.blackstar.softwarelab.websocket.MessageWebSocketHandler;
 import com.blackstar.softwarelab.websocket.TerminalWebSocketHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +45,9 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Autowired
     private ImageChecker imageChecker;
+
+    @Autowired
+    private IAppService appService;
 
 
     @Bean
@@ -106,7 +109,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Bean
     public MessageWebSocketHandler newMessageHandler() {
-        return new MessageWebSocketHandler(imageChecker, containerService);
+        return new MessageWebSocketHandler(imageChecker, containerService, appService);
     }
 
     protected SecurityUser getCurrentUser() {

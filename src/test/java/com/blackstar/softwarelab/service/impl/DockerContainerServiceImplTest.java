@@ -91,10 +91,14 @@ public class DockerContainerServiceImplTest extends AbstractBaseTest {
 
     @Test
     public void testPullImage() {
-        String imageName = "hello-world:latest";
-        ResultCallback.Adapter<PullResponseItem> responseItemAdapter = dockerContainerServiceImpl.pullImage(imageName);
+        String imageName = "metabase/metabase:v0.35.3";
+        DockerContainerServiceImpl.PullImageCallback responseItemAdapter = dockerContainerServiceImpl.pullImage(imageName);
         try {
-            assertTrue(responseItemAdapter.awaitCompletion(60, TimeUnit.SECONDS));
+            while(!responseItemAdapter.isCompleted(1,TimeUnit.SECONDS)){
+                TimeUnit.SECONDS.sleep(1);
+            }
+//            TimeUnit.SECONDS.sleep(100);
+            assertTrue(dockerContainerServiceImpl.hasImage(imageName));
             dockerContainerServiceImpl.removeImage(imageName);
             assertFalse(dockerContainerServiceImpl.hasImage(imageName));
 

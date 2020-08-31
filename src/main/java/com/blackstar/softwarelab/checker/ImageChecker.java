@@ -92,8 +92,8 @@ public class ImageChecker {
     private void checkImage() {
         pullImageMap.forEach((appVersion, webSessionAndCallback) -> {
             try {
-                if (webSessionAndCallback.getCallback().awaitCompletion(1, TimeUnit.SECONDS)) {
-
+                //todo 还没有下载完成就标记完成
+                if (webSessionAndCallback.getCallback().isCompleted(1, TimeUnit.SECONDS)) {
                     pullImageMap.remove(appVersion);
                     // set version status to download finish
                     updateStatus(appVersion, DbConst.DOWNLOAD_STATUS_FINISH);

@@ -10,9 +10,9 @@ import com.blackstar.softwarelab.service.ContainerService;
 import com.blackstar.softwarelab.service.IPortService;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.async.ResultCallback;
+import com.github.dockerjava.api.async.ResultCallbackTemplate;
 import com.github.dockerjava.api.command.CreateContainerResponse;
 import com.github.dockerjava.api.command.ExecCreateCmdResponse;
-import com.github.dockerjava.api.command.InspectExecResponse;
 import com.github.dockerjava.api.model.*;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientImpl;
@@ -20,13 +20,14 @@ import com.github.dockerjava.core.command.ExecStartResultCallback;
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
 import com.github.dockerjava.transport.DockerHttpClient;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.Field;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -231,7 +232,8 @@ public class DockerContainerServiceImpl implements ContainerService {
 
     @Override
     public PullImageCallback pullImage(String imageName) {
-        return dockerClient.pullImageCmd(imageName).exec(new PullImageCallback());
+        String[] imageAndVersion = imageName.split(":");
+        return dockerClient.pullImageCmd(imageAndVersion[0]).withTag(imageAndVersion[1]).exec(new PullImageCallback());
     }
 
     @Override
@@ -267,6 +269,25 @@ public class DockerContainerServiceImpl implements ContainerService {
     }
 
     public static class PullImageCallback extends ResultCallback.Adapter<PullResponseItem> {
+
+        private CountDownLatch completed;
+
+        public PullImageCallback(){
+            try {
+                Field completeField = ResultCallbackTemplate.class.getDeclaredField("completed");
+                completeField.setAccessible(true);
+                completed = (CountDownLatch) completeField.get(this);
+            } catch (NoSuchFieldException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        public boolean isCompleted(long timeout, TimeUnit timeUnit) throws InterruptedException {
+            return completed.await(timeout, timeUnit);
+        }
 
     }
 
