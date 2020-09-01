@@ -10,6 +10,7 @@ import com.blackstar.softwarelab.bean.SortObj;
 import com.blackstar.softwarelab.common.BaseController;
 import com.blackstar.softwarelab.entity.Instance;
 import com.blackstar.softwarelab.bean.SecurityUser;
+import com.blackstar.softwarelab.service.IAppVersionService;
 import com.blackstar.softwarelab.service.IInstanceService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,9 @@ public class InstanceController extends BaseController {
 
     @Autowired
     private IInstanceService instanceService;
+
+    @Autowired
+    private IAppVersionService appVersionService;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -62,6 +66,9 @@ public class InstanceController extends BaseController {
             if (ports == null) {
                 throw new RuntimeException("container info mush have ports");
             }
+            if(appVersionService.getVersionByNameAndVersion(instance.getAppName(),instance.getAppVersion()) == null) {
+                throw new RuntimeException("can't find "+ instance.getAppName()+":"+instance.getAppVersion());
+            }
         } catch (IOException e) {
             throw new RuntimeException("check container info error:", e);
         }
@@ -82,7 +89,7 @@ public class InstanceController extends BaseController {
     @RequestMapping(method = RequestMethod.GET)
     public IPage<Instance> list(@RequestParam int pageNum, @RequestParam int pageSize, String image, String name, String sort) {
         //add sort;
-        // todo change image to app
+        // todo change property name image to app
         Page<Instance> instancePage = new Page<>(pageNum, pageSize);
 
         QueryWrapper<Instance> appQueryWrapper = new QueryWrapper<>();

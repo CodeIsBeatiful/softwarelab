@@ -80,7 +80,6 @@ public class MessageWebSocketHandler extends TextWebSocketHandler {
         AppVersion appVersion = AppVersion.builder().appName(split[0]).version(split[1]).build();
 
         WebSocketResponseMessage responseMessage = null;
-        //todo get image from additional info
         App app = appService.getByName(appVersion.getAppName());
         String imageName = null;
         try {

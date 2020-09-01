@@ -18,7 +18,7 @@ public interface AppVersionMapper extends BaseMapper<AppVersion> {
 
     @Select({"<script>",
             "select version,download_status downloadStatus from app_version",
-            " where app_name = #{name}",
+            " where app_name = #{appName}",
             "</script>"})
     List<AppVersion> getSimpleByAppName(String appName);
 }
