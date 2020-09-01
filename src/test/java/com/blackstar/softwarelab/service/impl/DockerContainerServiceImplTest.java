@@ -1,6 +1,7 @@
 package com.blackstar.softwarelab.service.impl;
 
 import com.blackstar.softwarelab.AbstractBaseTest;
+import com.blackstar.softwarelab.bean.ContainerEnvSetting;
 import com.blackstar.softwarelab.bean.ContainerInfo;
 import com.blackstar.softwarelab.bean.ContainerPortSetting;
 import com.blackstar.softwarelab.exception.PortException;
@@ -41,8 +42,8 @@ public class DockerContainerServiceImplTest extends AbstractBaseTest {
         ports.add(ContainerPortSetting.builder().targetPort(port).port(5432).build());
         List<String> labels = new ArrayList<>();
         labels.add("user:admin");
-        List<String> envs = new ArrayList<>();
-        envs.add("POSTGRES_PASSWORD=postgres");
+        List<ContainerEnvSetting> envs = new ArrayList<>();
+        envs.add(ContainerEnvSetting.builder().key("POSTGRES_PASSWORD").value("postgres").build());
         containerInfo = ContainerInfo.builder()
                 .imageName("postgres:9.6")
                 .name("admin_postgres_9.6")

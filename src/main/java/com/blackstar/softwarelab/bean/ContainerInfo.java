@@ -34,7 +34,7 @@ public class ContainerInfo {
     private List<String> labels;
 
     //e.g. user=123456
-    private List<String> envs;
+    private List<ContainerEnvSetting> envs;
 
     //e.g. http://ip:port/index.html
     private String url;

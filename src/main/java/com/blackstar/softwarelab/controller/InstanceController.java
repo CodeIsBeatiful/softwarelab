@@ -4,12 +4,9 @@ package com.blackstar.softwarelab.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.blackstar.softwarelab.bean.ContainerInfo;
-import com.blackstar.softwarelab.bean.ContainerPortSetting;
-import com.blackstar.softwarelab.bean.SortObj;
+import com.blackstar.softwarelab.bean.*;
 import com.blackstar.softwarelab.common.BaseController;
 import com.blackstar.softwarelab.entity.Instance;
-import com.blackstar.softwarelab.bean.SecurityUser;
 import com.blackstar.softwarelab.service.IAppVersionService;
 import com.blackstar.softwarelab.service.IInstanceService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -58,13 +55,20 @@ public class InstanceController extends BaseController {
     private void check(Instance instance) {
         try {
             if (instance.getAdditionalInfo() == null) {
-                throw new RuntimeException("instance additional info must not null");
+                throw new RuntimeException("instance additional info can't be null");
             }
             ContainerInfo containerInfo = objectMapper.readValue(instance.getAdditionalInfo(), ContainerInfo.class);
-            List<ContainerPortSetting> ports = containerInfo.getPorts();
             //check ports
+            List<ContainerPortSetting> ports = containerInfo.getPorts();
             if (ports == null) {
-                throw new RuntimeException("container info mush have ports");
+                throw new RuntimeException("container info ports can't be null");
+            }
+            // check envs
+            List<ContainerEnvSetting> envs = containerInfo.getEnvs();
+            for (ContainerEnvSetting env : envs) {
+                if(env.getKey() == null || env.getValue() == null){
+                    throw new RuntimeException("container info env key can't be null");
+                }
             }
             if(appVersionService.getVersionByNameAndVersion(instance.getAppName(),instance.getAppVersion()) == null) {
                 throw new RuntimeException("can't find "+ instance.getAppName()+":"+instance.getAppVersion());

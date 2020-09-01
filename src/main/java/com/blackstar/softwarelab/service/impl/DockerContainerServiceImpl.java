@@ -1,6 +1,7 @@
 package com.blackstar.softwarelab.service.impl;
 
 
+import com.blackstar.softwarelab.bean.ContainerEnvSetting;
 import com.blackstar.softwarelab.bean.ContainerInfo;
 import com.blackstar.softwarelab.bean.ContainerPortSetting;
 import com.blackstar.softwarelab.common.ContainerStatusConst;
@@ -76,11 +77,12 @@ public class DockerContainerServiceImpl implements ContainerService {
             String imageName = containerInfo.getImageName();
             Map<String, String> labelMap = getLabelMap(containerInfo.getLabels());
             List<PortBinding> portBindings = getPortBinds(containerInfo);
+            List<String> envs = getEnvs(containerInfo);
             CreateContainerResponse createContainer = dockerClient.createContainerCmd(imageName)
                     .withName(containerInfo.getName())
                     .withLabels(labelMap)
                     .withPortBindings(portBindings)
-                    .withEnv(containerInfo.getEnvs())
+                    .withEnv(envs)
 //                    .withHostConfig(hostConfig)
                     .exec();
 
@@ -119,6 +121,18 @@ public class DockerContainerServiceImpl implements ContainerService {
         }
         return portBindings;
     }
+
+    private List<String> getEnvs(ContainerInfo containerInfo) {
+        List<String> envs = new ArrayList<>();
+        List<ContainerEnvSetting> envSettings = containerInfo.getEnvs();
+        if(envSettings == null){
+            return envs;
+        }
+        envSettings.forEach(envSetting -> envs.add(envSetting.getKey()+"="+envSetting.getValue()));
+        return envs;
+    }
+
+
 
     public void stop(ContainerInfo containerInfo) {
         if (containerInfo.getId() == null) {
