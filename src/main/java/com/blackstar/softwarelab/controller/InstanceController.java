@@ -65,9 +65,12 @@ public class InstanceController extends BaseController {
             }
             // check envs
             List<ContainerEnvSetting> envs = containerInfo.getEnvs();
-            for (ContainerEnvSetting env : envs) {
-                if(env.getKey() == null || env.getValue() == null){
-                    throw new RuntimeException("container info env key can't be null");
+            // todo if some envs need , return error
+            if(envs != null) {
+                for (ContainerEnvSetting env : envs) {
+                    if (env.getKey() == null || env.getValue() == null) {
+                        throw new RuntimeException("container info env key can't be null");
+                    }
                 }
             }
             if(appVersionService.getVersionByNameAndVersion(instance.getAppName(),instance.getAppVersion()) == null) {
