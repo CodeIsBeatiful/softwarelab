@@ -11,6 +11,7 @@ import com.blackstar.softwarelab.service.IAppVersionService;
 import com.blackstar.softwarelab.service.IInstanceService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -36,6 +37,9 @@ public class InstanceController extends BaseController {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
+    @Value("instance.maxSize")
+    private Integer maxSize;
+
 
     private static String[] canSortStr = {"updateTime", "createTime", "runningStatus", "name"};
 
@@ -53,6 +57,9 @@ public class InstanceController extends BaseController {
     }
 
     private void check(Instance instance) {
+        if (instanceService.count() > maxSize) {
+            throw new RuntimeException("instance number bigger than "+maxSize);
+        }
         try {
             if (instance.getAdditionalInfo() == null) {
                 throw new RuntimeException("instance additional info can't be null");

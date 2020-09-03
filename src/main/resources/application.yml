@@ -38,6 +38,7 @@ user:
 
 instance:
   ports: 30001-39999
+  maxSize: 5
 
 
 checker:
