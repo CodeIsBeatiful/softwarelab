@@ -17,6 +17,7 @@ package com.blackstar.softwarelab.handler;
 
 import com.blackstar.softwarelab.bean.Code;
 import com.blackstar.softwarelab.bean.Response;
+import com.blackstar.softwarelab.exception.JwtExpiredTokenException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,9 +62,14 @@ public class ErrorResponseHandler implements AccessDeniedHandler {
             try {
                 response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
-                response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                response.setStatus(HttpStatus.OK.value());
+                Code code = Code.GENERAL;
+                // check jwt error
+                if(exception instanceof JwtExpiredTokenException){
+                    code = Code.JWT_TOKEN_EXPIRED;
+                }
                 mapper.writeValue(response.getWriter(), Response.of(exception.getMessage(),
-                        Code.GENERAL, null));
+                        code, null));
             } catch (Exception e) {
                 log.error("Can't handle exception", e);
             }
