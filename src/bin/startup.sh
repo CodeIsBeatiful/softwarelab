@@ -32,7 +32,7 @@ JAVA_OPT="-server -Xms1g -Xmx1g"
 JAVA_OPT="${JAVA_OPT} -XX:-OmitStackTraceInFastThrow -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${BASE_PATH}/"
 
 # start app
-nohup java ${JAVA_OPT} -jar ${JAR_DIR}/${APPLICATION_JAR} --spring.config.location=${CONFIG_DIR} --logging.config=${CONFIG_DIR}/logback.xml > /dev/null 2>&1 &
+nohup java ${JAVA_OPT} -jar ${JAR_DIR}/${APPLICATION_JAR} --spring.config.location=${CONFIG_DIR} --logging.config=${CONFIG_DIR}/logback.xml --log.path=${LOG_DIR} > /dev/null 2>&1 &
 
 echo ${APPLICATION} start successfully
 

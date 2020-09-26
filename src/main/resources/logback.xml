@@ -2,9 +2,9 @@
 <!DOCTYPE configuration>
 <configuration scan="true" scanPeriod="10 seconds">
 
-    <property name="log.root.level" value="INFO"/> <!-- 日志级别 -->
-    <property name="log.fileName" value="softwarelab"/>  <!-- 模块名称， 影响日志配置名，日志文件名 -->
-    <property name="log.base" value="../logs/"/>
+    <property name="log.root.level" value="INFO"/>
+    <property name="log.fileName" value="softwarelab"/>
+    <property name="log.path" value="${log.path}"/>
 
     <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -20,7 +20,7 @@
         <!--滚动策略 -->
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
             <!--路径 -->
-            <fileNamePattern>${log.base}/${log.fileName}-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <fileNamePattern>${log.path}/${log.fileName}-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
             <maxFileSize>100MB</maxFileSize>
             <maxHistory>30</maxHistory>
             <totalSizeCap>3GB</totalSizeCap>

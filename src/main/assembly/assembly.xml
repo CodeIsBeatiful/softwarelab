@@ -34,6 +34,11 @@
             </includes>
             <fileMode>0644</fileMode>
         </fileSet>
+        <fileSet>
+            <directory>src/main/resources/source</directory>
+            <outputDirectory>source</outputDirectory>
+            <fileMode>0755</fileMode>
+        </fileSet>
     </fileSets>
 
 </assembly>
