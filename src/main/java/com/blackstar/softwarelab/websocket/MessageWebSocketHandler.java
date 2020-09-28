@@ -86,7 +86,7 @@ public class MessageWebSocketHandler extends TextWebSocketHandler {
             ContainerSetting containerSetting = objectMapper.readValue(app.getAdditionalInfo(), ContainerSetting.class);
             imageName = containerSetting.getImageName();
             if(imageName == null) {
-                responseMessage = new WebSocketResponseMessage("failed", content + "没有找到有效的镜像");
+                responseMessage = new WebSocketResponseMessage("failed", content + "can't find image");
                 session.sendMessage(new TextMessage(objectMapper.writeValueAsBytes(responseMessage)));
             }
         } catch (IOException e) {
@@ -97,9 +97,9 @@ public class MessageWebSocketHandler extends TextWebSocketHandler {
                     .webSocketSession(session)
                     .callback(containerService.pullImage(imageName+":"+appVersion.getVersion()))
                     .build());
-            responseMessage = new WebSocketResponseMessage("success", content + "开始下载");
+            responseMessage = new WebSocketResponseMessage("success", content + "begin download");
         } else {
-            responseMessage = new WebSocketResponseMessage("success", content + "已存在");
+            responseMessage = new WebSocketResponseMessage("success", content + "is exist");
         }
         try {
             session.sendMessage(new TextMessage(objectMapper.writeValueAsBytes(responseMessage)));
