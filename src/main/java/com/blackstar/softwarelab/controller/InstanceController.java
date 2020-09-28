@@ -37,7 +37,7 @@ public class InstanceController extends BaseController {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    @Value("${instance.maxSize}")
+    @Value("${softwarelab.instance.maxSize}")
     private Integer maxSize;
 
 

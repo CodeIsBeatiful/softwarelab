@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -32,13 +33,14 @@ import java.util.concurrent.TimeUnit;
  */
 @Component
 @Slf4j
+@ConditionalOnProperty(prefix = "softwarelab.checker", value = "enabled", havingValue = "true")
 public class ImageChecker {
 
     private Map<AppVersion, WebSocketSessionAndCallback> pullImageMap = new ConcurrentHashMap<>();
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    @Value("${checker.sleepMillSeconds:500}")
+    @Value("${softwarelab.checker.sleepMillSeconds:500}")
     private int sleepMillSeconds;
 
     @Autowired

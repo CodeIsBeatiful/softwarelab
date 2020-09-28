@@ -24,7 +24,7 @@ import java.util.TreeSet;
 public class PortServiceImpl implements IPortService {
 
 
-    @Value("${instance.ports}")
+    @Value("${softwarelab.instance.ports}")
     private String ports;
 
     @Autowired

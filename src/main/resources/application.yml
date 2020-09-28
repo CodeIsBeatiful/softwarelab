@@ -31,16 +31,20 @@ security:
     tokenIssuer: "${JWT_TOKEN_ISSUER:software-lab}"
     tokenSigningKey: "${JWT_TOKEN_SIGNING_KEY:codeisbeatiful}"
 
-user:
-  admin:
-    id: 00000000-0000-0000-0000-000000000000
+softwarelab:
+  host: localhost
+  user:
+    admin:
+      id: 00000000-0000-0000-0000-000000000000
+  instance:
+    ports: 30001-39999
+    maxSize: 5
+  checker:
+    enabled: true
+    sleepMillSeconds: 500
 
 
-instance:
-  ports: 30001-39999
-  maxSize: 5
+source:
+  path:
 
 
-checker:
-  enabled: true
-  sleepMillSeconds: 500

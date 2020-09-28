@@ -23,8 +23,6 @@ public class HardwareChecker {
 
     private final SystemInfo systemInfo = new SystemInfo();
 
-    private Object lock = new Object();
-
     public HardwareInfo getLast() {
         return hardwareInfos.getLast();
     }

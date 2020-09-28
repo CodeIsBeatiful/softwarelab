@@ -23,10 +23,10 @@ import java.util.stream.Collectors;
 
 @Component
 @Slf4j
-@ConditionalOnProperty(prefix = "checker", value = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "softwarelab.checker", value = "enabled", havingValue = "true")
 public class ContainerChecker {
 
-    @Value("${checker.sleepMillSeconds:500}")
+    @Value("${softwarelab.checker.sleepMillSeconds:500}")
     private int sleepMillSeconds;
 
     @Autowired

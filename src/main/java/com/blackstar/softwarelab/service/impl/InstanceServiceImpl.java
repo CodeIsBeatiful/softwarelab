@@ -17,6 +17,7 @@ import com.blackstar.softwarelab.service.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -49,6 +50,9 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
 
     @Autowired
     private IPortService portService;
+
+    @Value("softwarelab.host")
+    private String host;
 
 
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -97,7 +101,7 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
             ports.forEach(containerPortSetting -> {
                 if(containerPortSetting.getType().equals("http")&& containerPortSetting.isEntrance()){
                     String url = startContainerInfo.getUrl() != null ? startContainerInfo.getUrl() : "";
-                    startContainerInfo.setUrl("http://localhost:"+containerPortSetting.getTargetPort()+url);
+                    startContainerInfo.setUrl("http://"+host+":"+containerPortSetting.getTargetPort()+url);
                 }
             });
         }
