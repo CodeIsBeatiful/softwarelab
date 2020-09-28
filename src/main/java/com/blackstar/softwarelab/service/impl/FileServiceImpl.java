@@ -38,14 +38,18 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements IF
         if(resourceAsStream == null){
             return;
         }
-        response.setContentType(MediaType.IMAGE_PNG_VALUE);
         try {
-            response.setContentLength(resourceAsStream.available());
             ServletOutputStream outputStream = response.getOutputStream();
             byte[] bytes = new byte[4096];
-            while(resourceAsStream.read(bytes)!=-1){
-                outputStream.write(bytes);
+            int len;
+            int fileSize = 0;
+            while((len = resourceAsStream.read(bytes))!=-1){
+                outputStream.write(bytes,0,len);
+                fileSize+=len;
+
             }
+            response.setContentType(MediaType.IMAGE_PNG_VALUE);
+            response.setContentLength(fileSize);
             resourceAsStream.close();
             outputStream.flush();
             outputStream.close();
