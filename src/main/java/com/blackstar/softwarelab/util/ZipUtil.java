@@ -2,6 +2,7 @@ package com.blackstar.softwarelab.util;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
+import org.apache.commons.compress.utils.IOUtils;
 
 import java.io.*;
 import java.util.Enumeration;
@@ -14,11 +15,12 @@ public class ZipUtil {
      *
      * @param zipFilePath zip文件路径
      * @param targetDir 目标目录
-     * @param ignoreDepth 忽略文件层数
+     * @param ignoreDepth 忽略文件层数,可以按需从根开始忽略
      */
     public static void unZip(String zipFilePath, String targetDir, int ignoreDepth) {
+        ZipFile zipFile = null;
         try {
-            ZipFile zipFile = new ZipFile(zipFilePath);
+            zipFile = new ZipFile(zipFilePath, "gbk");
             Enumeration<ZipArchiveEntry> entries = zipFile.getEntries();
             while (entries.hasMoreElements()) {
                 ZipArchiveEntry zipArchiveEntry = entries.nextElement();
@@ -50,11 +52,7 @@ public class ZipUtil {
                     file.createNewFile();
                     try (InputStream inputStream = zipFile.getInputStream(zipArchiveEntry);
                          FileOutputStream fileOutputStream = new FileOutputStream(file)) {
-                        byte[] bytes = new byte[1024];
-                        while (inputStream.read(bytes, 0, 1024) != -1) {
-                            fileOutputStream.write(bytes);
-                        }
-                        fileOutputStream.flush();
+                        IOUtils.copy(inputStream,fileOutputStream);
                     }
                 }
             }
@@ -62,6 +60,13 @@ public class ZipUtil {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            //close zip file
+            try {
+                zipFile.close();
+            } catch (IOException e) {
+                //do nothing
+            }
         }
     }
 
@@ -70,7 +75,7 @@ public class ZipUtil {
 
         String targetDir = "/Users/blackstar/opt/software-lab/source";
 
-        String zipFilePath = "/Users/blackstar/Downloads/softwarelab-source-0.0.1.zip";
+        String zipFilePath = "/Users/blackstar/github/softwarelab/source.zip";
 
         int ignoreDepth = 1;
 
