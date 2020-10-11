@@ -17,4 +17,6 @@ public interface IAppSourceService extends IService<AppSource> {
     boolean upgrade();
 
     boolean load(MultipartFile file);
+
+    boolean loadToDb();
 }

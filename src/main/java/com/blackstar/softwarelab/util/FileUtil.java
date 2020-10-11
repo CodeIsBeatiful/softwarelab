@@ -3,10 +3,7 @@ package com.blackstar.softwarelab.util;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.util.UUID;
 
 public class FileUtil {
@@ -41,15 +38,23 @@ public class FileUtil {
         if (!file.exists()) {
             return bytes;
         }else {
+            RandomAccessFile accessFile = null;
             try {
-                FileInputStream fileInputStream = new FileInputStream(file);
-                bytes = new byte[fileInputStream.available()];
-                fileInputStream.read(bytes);
-                fileInputStream.close();
+                accessFile = new RandomAccessFile(file, "r");
+                bytes = new byte[Math.toIntExact(accessFile.length())];
+                accessFile.readFully(bytes);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
+            } finally {
+                if (accessFile != null) {
+                    try {
+                        accessFile.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
         return bytes;

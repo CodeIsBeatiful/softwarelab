@@ -36,8 +36,9 @@ public class ContainerInfo {
     //e.g. user=123456
     private List<ContainerEnvSetting> envs;
 
-    //e.g. http://ip:port/index.html
     private String url;
+    //e.g. http://ip:port/index.html
+    private String home;
 
 
     public ContainerInfo self() {

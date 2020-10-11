@@ -16,21 +16,38 @@ public class SoftwareLabApplication {
 
     private static final String DEFAULT_LOG_PATH = "/logs";
 
+    private static final String DATA_PATH = "--data.path";
+
     public static void main(String[] args) {
         args = process(args);
         SpringApplication.run(SoftwareLabApplication.class, args);
     }
 
     private static String[] process(String[] args) {
-        // process
-        //log_path set
-        Optional<String> logArgs = Arrays.stream(args).filter(arg -> arg.startsWith(LOG_PATH)).findFirst();
-
-        if (logArgs.isPresent()) {
-            System.setProperty("log.path", logArgs.get().split("=")[1]);
-        } else {
-            System.setProperty("log.path", System.getProperty("user.dir")+DEFAULT_LOG_PATH);
+        // scan arg
+        String logArg = null;
+        String dataArg = null;
+        for (String arg : args) {
+            if (arg.startsWith(LOG_PATH)) {
+                logArg = arg;
+            } else if (arg.startsWith(DATA_PATH)) {
+                dataArg = arg;
+            }
         }
+        //process log arg
+        if (logArg != null) {
+            System.setProperty("log.path", logArg.split("=")[1]);
+        } else {
+            System.setProperty("log.path", System.getProperty("user.dir") + DEFAULT_LOG_PATH);
+        }
+        //process data arg
+        if (dataArg != null) {
+            System.setProperty("data.path", logArg.split("=")[1]);
+        } else {
+            System.setProperty("data.path", System.getProperty("user.dir"));
+        }
+
+
         return args;
 
     }

@@ -42,4 +42,6 @@ public class App implements Serializable {
 
     private Integer status;
 
+    private byte[] logo;
+
 }

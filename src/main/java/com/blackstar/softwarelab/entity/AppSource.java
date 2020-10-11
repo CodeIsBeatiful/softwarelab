@@ -1,6 +1,7 @@
 package com.blackstar.softwarelab.entity;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.*;
@@ -30,5 +31,9 @@ public class AppSource  implements Serializable {
 
     private String repository;
 
+    private LocalDateTime createTime;
 
+    private LocalDateTime updateTime;
+
+    private Integer status;
 }

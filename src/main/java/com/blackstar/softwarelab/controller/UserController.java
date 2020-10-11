@@ -28,7 +28,7 @@ public class UserController extends BaseController {
     @Autowired
     private ISysUserService userService;
 
-    @Value("softwarelab.user.admin.id")
+    @Value("${softwarelab.user.admin.id}")
     private String adminId;
 
     @RequestMapping(method = RequestMethod.GET, value = "/{id}")

@@ -57,4 +57,6 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements IF
             log.error("get logo error",e);
         }
     }
+
+
 }

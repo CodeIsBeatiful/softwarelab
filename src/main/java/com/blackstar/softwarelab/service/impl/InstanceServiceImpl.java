@@ -51,7 +51,7 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
     @Autowired
     private IPortService portService;
 
-    @Value("softwarelab.host")
+    @Value("${softwarelab.host}")
     private String host;
 
 
@@ -101,7 +101,7 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
             ports.forEach(containerPortSetting -> {
                 if(containerPortSetting.getType().equals("http")&& containerPortSetting.isEntrance()){
                     String url = startContainerInfo.getUrl() != null ? startContainerInfo.getUrl() : "";
-                    startContainerInfo.setUrl("http://"+host+":"+containerPortSetting.getTargetPort()+url);
+                    startContainerInfo.setHome("http://"+host+":"+containerPortSetting.getTargetPort()+url);
                 }
             });
         }

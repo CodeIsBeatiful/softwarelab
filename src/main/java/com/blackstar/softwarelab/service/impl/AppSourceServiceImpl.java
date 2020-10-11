@@ -3,6 +3,7 @@ package com.blackstar.softwarelab.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.blackstar.softwarelab.bean.AppSourceInfo;
 import com.blackstar.softwarelab.bean.SourceRelease;
+import com.blackstar.softwarelab.common.DbConst;
 import com.blackstar.softwarelab.entity.App;
 import com.blackstar.softwarelab.entity.AppSource;
 import com.blackstar.softwarelab.entity.AppVersion;
@@ -10,6 +11,7 @@ import com.blackstar.softwarelab.mapper.AppSourceMapper;
 import com.blackstar.softwarelab.service.IAppService;
 import com.blackstar.softwarelab.service.IAppSourceService;
 import com.blackstar.softwarelab.service.IAppVersionService;
+import com.blackstar.softwarelab.util.FileUtil;
 import com.blackstar.softwarelab.util.ZipUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
@@ -24,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -45,6 +48,8 @@ public class AppSourceServiceImpl extends ServiceImpl<AppSourceMapper, AppSource
 
     private String appsDir = targetDir + File.separator + "apps";
 
+    private String logosDir = targetDir + File.separator + "logos";
+
     private int ignoreDepth = 1;
 
     @Autowired
@@ -56,6 +61,9 @@ public class AppSourceServiceImpl extends ServiceImpl<AppSourceMapper, AppSource
 
     @Autowired
     private IAppVersionService appVersionService;
+
+    @Autowired
+    private IAppSourceService appSourceService;
 
 
     @Override
@@ -102,6 +110,7 @@ public class AppSourceServiceImpl extends ServiceImpl<AppSourceMapper, AppSource
 
     @Transactional
     public boolean loadToDb() {
+        LocalDateTime now = LocalDateTime.now();
         File appsFile = new File(appsDir);
         String[] fileNames = appsFile.list();
         for (String fileName : fileNames) {
@@ -113,7 +122,11 @@ public class AppSourceServiceImpl extends ServiceImpl<AppSourceMapper, AppSource
                         .name(appName)
                         .type(appSourceInfo.getType())
                         .description(appSourceInfo.getDescription())
-                        .additionalInfo(appSourceInfo.getAdditionalInfo().asText())
+                        .additionalInfo(appSourceInfo.getAdditionalInfo().toString())
+                        .logo(FileUtil.getContent(System.getProperty("data.path") + File.separator + logosDir + File.separator + appName + ".png"))
+                        .createTime(now)
+                        .updateTime(now)
+                        .status(DbConst.STATUS_NORMAL)
                         .build());
                 List<AppSourceInfo.AppSourceVersion> versions = appSourceInfo.getVersions();
                 if (versions != null && versions.size() > 0) {
@@ -121,10 +134,23 @@ public class AppSourceServiceImpl extends ServiceImpl<AppSourceMapper, AppSource
                         appVersionService.save(AppVersion.builder()
                                 .appName(appName)
                                 .version(appSourceVersion.getVersion())
-                                .additionalInfo(appSourceVersion.getAdditionalInfo() != null ? appSourceVersion.getAdditionalInfo().asText() : null)
+                                .additionalInfo(appSourceVersion.getAdditionalInfo() != null ? appSourceVersion.getAdditionalInfo().toString(): null)
+                                .createTime(now)
+                                .updateTime(now)
+                                .status(DbConst.STATUS_NORMAL)
+                                .downloadStatus(DbConst.DOWNLOAD_STATUS_INIT)
                                 .build());
                     }
                 }
+                //todo
+                appSourceService.save(AppSource.builder()
+                .id("00000000-0000-0000-0000-000000000000")
+                .version("0.0.0")
+                .repository(null)
+                .createTime(now)
+                .updateTime(now)
+                .status(DbConst.STATUS_NORMAL)
+                .build());
             } catch (IOException e) {
                 e.printStackTrace();
                 return false;

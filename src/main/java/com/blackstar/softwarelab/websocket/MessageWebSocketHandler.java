@@ -99,6 +99,7 @@ public class MessageWebSocketHandler extends TextWebSocketHandler {
                     .build());
             responseMessage = new WebSocketResponseMessage("success", content + "begin download");
         } else {
+            //todo 如果数据库中下载状态为其他，设置为已下载
             responseMessage = new WebSocketResponseMessage("success", content + "is exist");
         }
         try {

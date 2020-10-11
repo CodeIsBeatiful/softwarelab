@@ -23,7 +23,8 @@ CREATE TABLE IF NOT EXISTS app
     create_time     timestamp,
     update_time     timestamp,
     status          integer,
-    additional_info varchar
+    additional_info varchar,
+    logo binary
 );
 
 
@@ -79,7 +80,10 @@ CREATE TABLE IF NOT EXISTS app_source
         constraint app_source_pk
             primary key,
     version    varchar(50),
-    repository varchar(100)
+    repository varchar(100),
+    create_time timestamp,
+    update_time timestamp,
+    status      integer
 );
 
 
