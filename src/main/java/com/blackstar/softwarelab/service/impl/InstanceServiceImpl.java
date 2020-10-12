@@ -144,7 +144,7 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
             instance.setRunningStatus(DbConst.RUNNING_STATUS_STOP);
             this.save(instance);
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
+            log.error("add instance error",e);
         }
 
     }
@@ -167,7 +167,7 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
         try {
             return objectMapper.readValue(additionalInfo, ContainerInfo.class);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("get container info error",e);
         }
         return null;
     }

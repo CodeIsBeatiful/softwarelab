@@ -68,14 +68,14 @@ public class DataInitConfig {
                 try {
                     resultSet.close();
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    log.error("check data exist error", e);
                 }
             }
             if (statement != null) {
                 try {
                     statement.close();
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    log.error("check data exist error", e);
                 }
             }
         }

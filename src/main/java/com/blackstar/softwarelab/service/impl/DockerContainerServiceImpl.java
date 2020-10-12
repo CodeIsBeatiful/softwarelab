@@ -291,10 +291,8 @@ public class DockerContainerServiceImpl implements ContainerService {
                 Field completeField = ResultCallbackTemplate.class.getDeclaredField("completed");
                 completeField.setAccessible(true);
                 completed = (CountDownLatch) completeField.get(this);
-            } catch (NoSuchFieldException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                log.error("pull image error",e);
             }
 
         }

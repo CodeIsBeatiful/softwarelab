@@ -2,28 +2,25 @@ package com.blackstar.softwarelab.websocket;
 
 
 import com.blackstar.softwarelab.bean.ContainerInfo;
-import com.blackstar.softwarelab.common.DbConst;
 import com.blackstar.softwarelab.entity.Instance;
 import com.blackstar.softwarelab.service.ContainerService;
 import com.blackstar.softwarelab.service.IInstanceService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.dockerjava.core.command.ExecStartResultCallback;
 import lombok.Builder;
 import lombok.Data;
-import org.springframework.web.server.WebSession;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
 
+@Slf4j
 public class TerminalWebSocketHandler extends TextWebSocketHandler {
 
     private final ContainerService containerService;
@@ -56,12 +53,8 @@ public class TerminalWebSocketHandler extends TextWebSocketHandler {
                     }else{
                         callbackQueue.add(webSessionAndCallback);
                     }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                } catch (Exception e) {
+                    log.error("init terminal websocket handler error",e);
                 }
             }
 

@@ -152,7 +152,7 @@ public class AppSourceServiceImpl extends ServiceImpl<AppSourceMapper, AppSource
                 .status(DbConst.STATUS_NORMAL)
                 .build());
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error("load to db error",e);
                 return false;
             }
         }
