@@ -5,8 +5,12 @@ spring:
     url: jdbc:h2:~/.softwarelab/data;AUTO_SERVER=TRUE
     username: sa
     password: softwarelab
+  h2:
     console:
       enabled: true
+      settings:
+        trace: true
+        web-allow-others: true
 
 spring.mvc.cors:
   mappings:
