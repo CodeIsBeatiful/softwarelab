@@ -4,7 +4,7 @@ import com.blackstar.softwarelab.service.IAppSourceService;
 import com.blackstar.softwarelab.util.ZipUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
@@ -14,10 +14,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-@Configuration
+@Service
 @Slf4j
-//todo rewrite: check table app_version
-public class DataInitConfig {
+public class DataInitService {
 
     private final String INIT_SOURCE_FILE_NAME = "source.zip";
 
@@ -55,7 +54,7 @@ public class DataInitConfig {
         ResultSet resultSet = null;
         try {
             statement = connection.createStatement();
-            resultSet = statement.executeQuery("select count(1) from app_version");
+            resultSet = statement.executeQuery("select count(1) from APP_SOURCE");
             while (resultSet.next()) {
                 flag = resultSet.getInt(1) > 0;
             }

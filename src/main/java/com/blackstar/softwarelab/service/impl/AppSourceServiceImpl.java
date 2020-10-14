@@ -142,8 +142,13 @@ public class AppSourceServiceImpl extends ServiceImpl<AppSourceMapper, AppSource
                                 .build());
                     }
                 }
-                //todo
-                appSourceService.save(AppSource.builder()
+
+            } catch (IOException e) {
+                log.error("load to db error",e);
+                return false;
+            }
+        }
+        appSourceService.save(AppSource.builder()
                 .id("00000000-0000-0000-0000-000000000000")
                 .version("0.0.0")
                 .repository(null)
@@ -151,11 +156,6 @@ public class AppSourceServiceImpl extends ServiceImpl<AppSourceMapper, AppSource
                 .updateTime(now)
                 .status(DbConst.STATUS_NORMAL)
                 .build());
-            } catch (IOException e) {
-                log.error("load to db error",e);
-                return false;
-            }
-        }
         return true;
     }
 }
