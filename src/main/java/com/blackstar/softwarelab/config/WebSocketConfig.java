@@ -6,6 +6,7 @@ import com.blackstar.softwarelab.common.DbConst;
 import com.blackstar.softwarelab.entity.Instance;
 import com.blackstar.softwarelab.service.ContainerService;
 import com.blackstar.softwarelab.service.IAppService;
+import com.blackstar.softwarelab.service.IAppVersionService;
 import com.blackstar.softwarelab.service.IInstanceService;
 import com.blackstar.softwarelab.websocket.MessageWebSocketHandler;
 import com.blackstar.softwarelab.websocket.TerminalWebSocketHandler;
@@ -48,6 +49,9 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Autowired
     private IAppService appService;
+
+    @Autowired
+    private IAppVersionService appVersionService;
 
 
     @Bean
@@ -109,7 +113,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Bean
     public MessageWebSocketHandler newMessageHandler() {
-        return new MessageWebSocketHandler(imageChecker, containerService, appService);
+        return new MessageWebSocketHandler(imageChecker, containerService, appService,appVersionService);
     }
 
     protected SecurityUser getCurrentUser() {

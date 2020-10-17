@@ -1,9 +1,14 @@
 package com.blackstar.softwarelab.config;
 
+import com.blackstar.softwarelab.common.DbConst;
+import com.blackstar.softwarelab.entity.SysUser;
 import com.blackstar.softwarelab.service.IAppSourceService;
+import com.blackstar.softwarelab.service.ISysUserService;
 import com.blackstar.softwarelab.util.ZipUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -13,6 +18,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDateTime;
 
 @Service
 @Slf4j
@@ -26,6 +32,17 @@ public class DataInitService {
     @Autowired
     private IAppSourceService appSourceService;
 
+    @Autowired
+    private ISysUserService userService;
+    @Autowired
+    private BCryptPasswordEncoder encoder;
+
+    @Value("${softwarelab.user.admin.id}")
+    private String adminId;
+
+    @Value("${softwarelab.user.admin.password}")
+    private String adminPassword;
+
     @PostConstruct
     public void init() throws Exception {
         Connection connection = datasource.getConnection();
@@ -36,14 +53,26 @@ public class DataInitService {
             File file = new File(dataDir + File.separator + INIT_SOURCE_FILE_NAME);
             if (file.exists()) {
                 //unzip to source package
-                String targetDir = dataDir+File.separator+"source";
+                String targetDir = dataDir + File.separator + "source";
                 ZipUtil.unZip(file.getPath(), targetDir, 1);
                 //load to db
                 appSourceService.loadToDb();
-                log.info("data init success: {}",INIT_SOURCE_FILE_NAME);
-            }else {
-                log.warn("can't find source: {}",INIT_SOURCE_FILE_NAME);
+                log.info("data init success: {}", INIT_SOURCE_FILE_NAME);
+            } else {
+                log.warn("can't find source: {}", INIT_SOURCE_FILE_NAME);
             }
+            log.info("begin init administrator");
+            LocalDateTime now = LocalDateTime.now();
+            userService.save(SysUser.builder()
+                    .id(adminId)
+                    .username("admin")
+                    .password(encoder.encode(adminPassword))
+                    .mail(null)
+                    .createTime(now)
+                    .updateTime(now)
+                    .status(DbConst.STATUS_NORMAL)
+                    .build());
+
         }
 
     }

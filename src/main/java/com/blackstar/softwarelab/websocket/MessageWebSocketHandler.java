@@ -1,12 +1,15 @@
 package com.blackstar.softwarelab.websocket;
 
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.blackstar.softwarelab.bean.ContainerSetting;
 import com.blackstar.softwarelab.checker.ImageChecker;
+import com.blackstar.softwarelab.common.DbConst;
 import com.blackstar.softwarelab.entity.App;
 import com.blackstar.softwarelab.entity.AppVersion;
 import com.blackstar.softwarelab.service.ContainerService;
 import com.blackstar.softwarelab.service.IAppService;
+import com.blackstar.softwarelab.service.IAppVersionService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -24,12 +27,15 @@ public class MessageWebSocketHandler extends TextWebSocketHandler {
 
     private final IAppService appService;
 
+    private final IAppVersionService appVersionService;
+
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    public MessageWebSocketHandler(ImageChecker imageChecker, ContainerService containerService,IAppService appService) {
+    public MessageWebSocketHandler(ImageChecker imageChecker, ContainerService containerService,IAppService appService,IAppVersionService appVersionService) {
         this.imageChecker = imageChecker;
         this.containerService = containerService;
         this.appService = appService;
+        this.appVersionService = appVersionService;
     }
 
     @Override
@@ -99,7 +105,10 @@ public class MessageWebSocketHandler extends TextWebSocketHandler {
                     .build());
             responseMessage = new WebSocketResponseMessage("success", content + "begin download");
         } else {
-            //todo 如果数据库中下载状态为其他，设置为已下载
+            appVersionService.update(new UpdateWrapper<AppVersion>()
+                    .eq(DbConst.COLUMN_APP_NAME,appVersion.getAppName())
+                    .eq(DbConst.COLUMN_VERSION,appVersion.getVersion())
+                    .set(DbConst.COLUMN_DOWNLOAD_STATUS,DbConst.DOWNLOAD_STATUS_FINISH));
             responseMessage = new WebSocketResponseMessage("success", content + "is exist");
         }
         try {

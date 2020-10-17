@@ -40,4 +40,9 @@ public class DbConst {
 
     public static final String UPDATE_TIME = "update_time";
 
+    public static final String COLUMN_APP = "app";
+
+    public static final String COLUMN_APP_NAME = "app_name";
+
+    public static final String COLUMN_VERSION = "version";
 }

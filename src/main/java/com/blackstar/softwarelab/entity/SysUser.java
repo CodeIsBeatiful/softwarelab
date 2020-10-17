@@ -2,8 +2,8 @@ package com.blackstar.softwarelab.entity;
 
 import java.time.LocalDateTime;
 import java.io.Serializable;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+
+import lombok.*;
 import lombok.experimental.Accessors;
 
 /**
@@ -15,6 +15,9 @@ import lombok.experimental.Accessors;
  * @since 2020-03-27
  */
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 public class SysUser implements Serializable {
