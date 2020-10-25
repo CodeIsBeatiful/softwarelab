@@ -22,7 +22,7 @@ Compile the source code to get the compressed package or download the installati
 
 ```
 
-unzip /path/to/softwarelab-xx.zip -d /target/path
+unzip softwarelab-xx.zip -d /path/to/
 
 ```
 
@@ -30,7 +30,7 @@ Execute start command
 
 ```
 
-./target/path/softwarelab/bin/startup.sh
+./path/to/softwarelab/bin/startup.sh
 
 ```
 
@@ -44,7 +44,7 @@ Use a browser to open the address `http://ip:8080/`, the default username and pa
 
 ```
 
-./target/path/softwarelab/bin/restart.sh
+./path/to/softwarelab/bin/restart.sh
 
 ```
 
@@ -52,7 +52,7 @@ Use a browser to open the address `http://ip:8080/`, the default username and pa
 
 ```
 
-./target/path/softwarelab/bin/shutdown.sh
+./path/to/softwarelab/bin/shutdown.sh
 
 ```
 
@@ -60,7 +60,7 @@ Use a browser to open the address `http://ip:8080/`, the default username and pa
 
 ```
 
-tail -f /target/path/softwarelab-xx.log
+tail -f /path/to/softwarelab/softwarelab-xx.log
 
 ```
 
