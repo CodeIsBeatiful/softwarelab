@@ -92,7 +92,7 @@ public class MessageWebSocketHandler extends TextWebSocketHandler {
             ContainerSetting containerSetting = objectMapper.readValue(app.getAdditionalInfo(), ContainerSetting.class);
             imageName = containerSetting.getImageName();
             if(imageName == null) {
-                responseMessage = new WebSocketResponseMessage("failed", content + "can't find image");
+                responseMessage = new WebSocketResponseMessage("failed", content + " can't find image");
                 session.sendMessage(new TextMessage(objectMapper.writeValueAsBytes(responseMessage)));
             }
         } catch (IOException e) {
@@ -103,13 +103,13 @@ public class MessageWebSocketHandler extends TextWebSocketHandler {
                     .webSocketSession(session)
                     .callback(containerService.pullImage(imageName+":"+appVersion.getVersion()))
                     .build());
-            responseMessage = new WebSocketResponseMessage("success", content + "begin download");
+            responseMessage = new WebSocketResponseMessage("success", content + " begin download");
         } else {
             appVersionService.update(new UpdateWrapper<AppVersion>()
                     .eq(DbConst.COLUMN_APP_NAME,appVersion.getAppName())
                     .eq(DbConst.COLUMN_VERSION,appVersion.getVersion())
                     .set(DbConst.COLUMN_DOWNLOAD_STATUS,DbConst.DOWNLOAD_STATUS_FINISH));
-            responseMessage = new WebSocketResponseMessage("success", content + "is exist");
+            responseMessage = new WebSocketResponseMessage("success", content + " is exist");
         }
         try {
             session.sendMessage(new TextMessage(objectMapper.writeValueAsBytes(responseMessage)));

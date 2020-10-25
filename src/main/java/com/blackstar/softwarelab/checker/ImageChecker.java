@@ -94,7 +94,6 @@ public class ImageChecker {
     private void checkImage() {
         pullImageMap.forEach((appVersion, webSessionAndCallback) -> {
             try {
-                //todo 还没有下载完成就标记完成
                 if (webSessionAndCallback.getCallback().isCompleted(1, TimeUnit.SECONDS)) {
                     pullImageMap.remove(appVersion);
                     // set version status to download finish
@@ -102,7 +101,7 @@ public class ImageChecker {
                     //use websocket
                     WebSocketSession webSocketSession = webSessionAndCallback.getWebSocketSession();
                     if (webSocketSession.isOpen()) {
-                        WebSocketResponseMessage successMessage = new WebSocketResponseMessage("success", appVersion.getAppName() + ":" + appVersion.getVersion() + "下载完成");
+                        WebSocketResponseMessage successMessage = new WebSocketResponseMessage("success", appVersion.getAppName() + ":" + appVersion.getVersion() + " download complete");
                         webSocketSession.sendMessage(new TextMessage(objectMapper.writeValueAsBytes(successMessage)));
                     }
                 }

@@ -301,6 +301,17 @@ public class DockerContainerServiceImpl implements ContainerService {
             return completed.await(timeout, timeUnit);
         }
 
+        @Override
+        public void onComplete() {
+            log.info("download complete");
+            super.onComplete();
+        }
+
+        @Override
+        public void onError(Throwable throwable) {
+            log.info("download error");
+            super.onError(throwable);
+        }
     }
 
 }
