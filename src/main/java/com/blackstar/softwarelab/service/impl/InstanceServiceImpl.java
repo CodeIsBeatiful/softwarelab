@@ -7,10 +7,7 @@ import com.blackstar.softwarelab.bean.ContainerInfo;
 import com.blackstar.softwarelab.bean.ContainerPortSetting;
 import com.blackstar.softwarelab.bean.ContainerSetting;
 import com.blackstar.softwarelab.common.DbConst;
-import com.blackstar.softwarelab.entity.App;
-import com.blackstar.softwarelab.entity.AppVersion;
-import com.blackstar.softwarelab.entity.Instance;
-import com.blackstar.softwarelab.entity.SysUser;
+import com.blackstar.softwarelab.entity.*;
 import com.blackstar.softwarelab.exception.PortException;
 import com.blackstar.softwarelab.mapper.InstanceMapper;
 import com.blackstar.softwarelab.service.*;
@@ -48,8 +45,10 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
     @Autowired
     private IAppVersionService appVersionService;
 
+
     @Autowired
-    private IPortService portService;
+    private IAppExtensionService appExtensionService;
+
 
     @Value("${softwarelab.host}")
     private String host;
@@ -60,8 +59,8 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
     @Override
     public boolean start(String userId, String instanceId) {
         Instance instance = this.getOne(new QueryWrapper<Instance>()
-                .eq(DbConst.COLUMN_ID,instanceId)
-                .eq(DbConst.COLUMN_USER_ID,userId));
+                .eq(DbConst.COLUMN_ID, instanceId)
+                .eq(DbConst.COLUMN_USER_ID, userId));
         if (instance == null) {
             throw new RuntimeException("can't find instance info by instance");
         }
@@ -82,15 +81,15 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
                 // generate entrance url
                 processUrl(startContainerInfo);
                 UpdateWrapper<Instance> wrapper = new UpdateWrapper<Instance>()
-                        .set(DbConst.COLUMN_RUNNING_STATUS,DbConst.RUNNING_STATUS_START)
+                        .set(DbConst.COLUMN_RUNNING_STATUS, DbConst.RUNNING_STATUS_START)
                         .set(DbConst.COLUMN_ADDITIONAL_INFO, objectMapper.writeValueAsString(startContainerInfo))
-                        .set(DbConst.UPDATE_TIME,new Date())
+                        .set(DbConst.UPDATE_TIME, new Date())
                         .eq(DbConst.COLUMN_ID, instance.getId());
                 return this.update(wrapper);
             } catch (IOException e) {
                 throw new RuntimeException("instance start error", e);
             } catch (PortException e) {
-                throw new RuntimeException("instance port error",e);
+                throw new RuntimeException("instance port error", e);
             }
         }
     }
@@ -99,9 +98,9 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
         List<ContainerPortSetting> ports = startContainerInfo.getPorts();
         if (ports != null && ports.size() > 0) {
             ports.forEach(containerPortSetting -> {
-                if(containerPortSetting.getType().equals("http")&& containerPortSetting.isEntrance()){
+                if (containerPortSetting.getType().equals("http") && containerPortSetting.isEntrance()) {
                     String url = startContainerInfo.getUrl() != null ? startContainerInfo.getUrl() : "";
-                    startContainerInfo.setHome("http://"+host+":"+containerPortSetting.getTargetPort()+url);
+                    startContainerInfo.setHome("http://" + host + ":" + containerPortSetting.getTargetPort() + url);
                 }
             });
         }
@@ -118,11 +117,11 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
             throw new RuntimeException("container info is null");
         }
         UpdateWrapper<Instance> wrapper = new UpdateWrapper<Instance>()
-                .set(DbConst.COLUMN_RUNNING_STATUS,DbConst.RUNNING_STATUS_STOP)
-                .set(DbConst.UPDATE_TIME,new Date())
+                .set(DbConst.COLUMN_RUNNING_STATUS, DbConst.RUNNING_STATUS_STOP)
+                .set(DbConst.UPDATE_TIME, new Date())
                 .eq(DbConst.COLUMN_ID, instance.getId())
-                .eq(DbConst.COLUMN_USER_ID,userId);
-        boolean updateFlag  = this.update(wrapper);
+                .eq(DbConst.COLUMN_USER_ID, userId);
+        boolean updateFlag = this.update(wrapper);
         containerService.stop(containerInfo);
         return updateFlag;
     }
@@ -143,8 +142,9 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
             instance.setStatus(DbConst.STATUS_NORMAL);
             instance.setRunningStatus(DbConst.RUNNING_STATUS_STOP);
             this.save(instance);
+            appExtensionService.addUsedCount(instance.getAppName());
         } catch (JsonProcessingException e) {
-            log.error("add instance error",e);
+            log.error("add instance error", e);
         }
 
     }
@@ -167,7 +167,7 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
         try {
             return objectMapper.readValue(additionalInfo, ContainerInfo.class);
         } catch (IOException e) {
-            log.error("get container info error",e);
+            log.error("get container info error", e);
         }
         return null;
     }
@@ -180,7 +180,7 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
             //image name
             ContainerSetting containerSetting = objectMapper.readValue(app.getAdditionalInfo(), ContainerSetting.class);
             ContainerSetting versionContainerSetting = objectMapper.readValue(appVersion.getAdditionalInfo(), ContainerSetting.class);
-            String imageName = versionContainerSetting.getImageName() != null ? versionContainerSetting.getImageName()+":"+appVersion.getVersion() : containerSetting.getImageName();
+            String imageName = versionContainerSetting.getImageName() != null ? versionContainerSetting.getImageName() + ":" + appVersion.getVersion() : containerSetting.getImageName();
             //sys labels
             List<String> sysLabels = Arrays.asList("appName:" + app.getName(), "appVersion:" + instance.getAppVersion(), "userId:" + user.getId());
             containerInfo = objectMapper.readValue(instance.getAdditionalInfo(), ContainerInfo.class);

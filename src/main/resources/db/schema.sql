@@ -41,6 +41,29 @@ CREATE TABLE IF NOT EXISTS app_version
         primary key (app_name, version)
 );
 
+CREATE TABLE IF NOT EXISTS app_source
+(
+    id         varchar(36) not null
+        constraint app_source_pk
+            primary key,
+    version    varchar(50),
+    repository varchar(100),
+    create_time timestamp,
+    update_time timestamp,
+    status      integer
+);
+
+CREATE TABLE IF NOT EXISTS app_extension
+(
+    app_name         varchar(50) not null
+        constraint app_extension_pk
+            primary key,
+    used_count integer,
+    create_time timestamp,
+    update_time timestamp,
+    status      integer
+);
+
 CREATE TABLE IF NOT EXISTS instance
 (
     id              varchar(36) not null
@@ -68,19 +91,6 @@ CREATE TABLE IF NOT EXISTS file
     name        varchar(200),
     type        varchar(10),
     data        bytea,
-    create_time timestamp,
-    update_time timestamp,
-    status      integer
-);
-
-
-CREATE TABLE IF NOT EXISTS app_source
-(
-    id         varchar(36) not null
-        constraint app_source_pk
-            primary key,
-    version    varchar(50),
-    repository varchar(100),
     create_time timestamp,
     update_time timestamp,
     status      integer

@@ -28,7 +28,7 @@ import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
  * @author jobob
  * @since 2018-09-12
  */
-public class PgGenerator {
+public class DatabaseGenerator {
 
     /**
      * <p>
@@ -42,7 +42,7 @@ public class PgGenerator {
         System.out.println(help.toString());
         if (scanner.hasNext()) {
             String ipt = scanner.next();
-            if (StringUtils.isNotEmpty(ipt)) {
+            if (StringUtils.isNotBlank(ipt)) {
                 return ipt;
             }
         }
@@ -53,6 +53,8 @@ public class PgGenerator {
      * RUN THIS
      */
     public static void main(String[] args) {
+
+        System.setProperty("log.path", System.getProperty("user.dir") + "/logs");
         // 代码生成器
         AutoGenerator mpg = new AutoGenerator();
 
@@ -66,11 +68,11 @@ public class PgGenerator {
 
         // 数据源配置
         DataSourceConfig dsc = new DataSourceConfig();
-        dsc.setUrl("jdbc:postgresql://localhost:5432/softwarelab");
-        // dsc.setSchemaName("public");
-        dsc.setDriverName("org.postgresql.Driver");
-        dsc.setUsername("postgres");
-        dsc.setPassword("postgres");
+        dsc.setUrl("jdbc:h2:~/.softwarelab/data;AUTO_SERVER=TRUE");
+//         dsc.setSchemaName("public");
+        dsc.setDriverName("org.h2.Driver");
+        dsc.setUsername("sa");
+        dsc.setPassword("softwarelab");
         mpg.setDataSource(dsc);
 
         // 包配置

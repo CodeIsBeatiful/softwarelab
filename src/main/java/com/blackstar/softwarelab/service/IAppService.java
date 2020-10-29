@@ -1,6 +1,7 @@
 package com.blackstar.softwarelab.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.blackstar.softwarelab.bean.AppInfo;
 import com.blackstar.softwarelab.entity.App;
 
 import java.util.List;
@@ -18,4 +19,6 @@ public interface IAppService extends IService<App> {
     List<String> getNameByType(String type);
 
     App getByName(String name);
+
+    List<AppInfo> getTop(int topNumber);
 }

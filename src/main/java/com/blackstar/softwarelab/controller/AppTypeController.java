@@ -17,7 +17,7 @@ public class AppTypeController {
     @RequestMapping(method = RequestMethod.GET)
     public List<KeyValuePair> list(){
         ArrayList<KeyValuePair> keyValuePairs = new ArrayList<>();
-        keyValuePairs.add(new KeyValuePair("All",""));
+        keyValuePairs.add(new KeyValuePair("All","All"));
         keyValuePairs.add(new KeyValuePair("Util","Util"));
         keyValuePairs.add(new KeyValuePair("Database","Database"));
         keyValuePairs.add(new KeyValuePair("BI","BI"));

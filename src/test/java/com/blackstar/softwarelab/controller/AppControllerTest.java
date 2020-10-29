@@ -61,7 +61,7 @@ public class AppControllerTest extends AbstractBaseTest {
     public void testCRUD() {
         assertNotNull(appController.add(app));
         assertNotNull(appController.get(this.app.getName()));
-        IPage<App> list = appController.list(0, 10);
+        IPage<App> list = appController.list(0, 10,null);
         assertTrue(list.getSize() > 0);
         App update = new App();
         update.setName(this.app.getName());

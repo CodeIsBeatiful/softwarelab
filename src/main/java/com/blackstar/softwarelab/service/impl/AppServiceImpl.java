@@ -2,7 +2,7 @@ package com.blackstar.softwarelab.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.blackstar.softwarelab.common.DbConst;
+import com.blackstar.softwarelab.bean.AppInfo;
 import com.blackstar.softwarelab.entity.App;
 import com.blackstar.softwarelab.mapper.AppMapper;
 import com.blackstar.softwarelab.service.IAppService;
@@ -30,5 +30,10 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements IAppS
     @Override
     public App getByName(String name) {
         return this.getOne(new QueryWrapper<App>().eq("name",name));
+    }
+
+    @Override
+    public List<AppInfo> getTop(int topNumber) {
+        return this.baseMapper.getTop(topNumber);
     }
 }

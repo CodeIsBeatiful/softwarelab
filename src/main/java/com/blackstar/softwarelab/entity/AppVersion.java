@@ -25,10 +25,8 @@ public class AppVersion implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @TableId
     private String appName;
 
-    @TableId
     private String version;
 
     private String additionalInfo;

@@ -4,6 +4,7 @@ package com.blackstar.softwarelab.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.blackstar.softwarelab.bean.AppInfo;
 import com.blackstar.softwarelab.common.BaseController;
 import com.blackstar.softwarelab.common.DbConst;
 import com.blackstar.softwarelab.entity.App;
@@ -47,28 +48,35 @@ public class AppController extends BaseController {
 
 
     @RequestMapping(method = RequestMethod.GET)
-    public IPage<App> list(@RequestParam int pageNum, @RequestParam int pageSize) {
+    public IPage<App> list(@RequestParam int pageNum, @RequestParam int pageSize,@RequestParam(required = false) String type) {
+
         Page<App> appPage = new Page<>(pageNum, pageSize);
-        QueryWrapper<App> appQueryWrapper = new QueryWrapper<App>().eq(DbConst.COLUMN_STATUS, DbConst.STATUS_NORMAL);
+        QueryWrapper<App> appQueryWrapper = new QueryWrapper<App>();
+        if(type != null && !type.equals("All")){
+            appQueryWrapper= appQueryWrapper.eq(DbConst.COLUMN_TYPE, type);
+        }
         return appService.page(appPage, appQueryWrapper);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "?op=type")
-    public IPage<App> listByType(@RequestParam String type, @RequestParam int pageNum, @RequestParam int pageSize) {
-        Page<App> appPage = new Page<>(pageNum, pageSize);
-        QueryWrapper<App> appQueryWrapper = new QueryWrapper<App>()
-                .eq(DbConst.COLUMN_TYPE, type);
-        return appService.page(appPage, appQueryWrapper);
+    @RequestMapping(method = RequestMethod.GET, value = "/top/{number}")
+    public List<AppInfo> top(@PathVariable int number) {
+        if(number< 0 || number < 10 ){
+             throw new RuntimeException("number must in 0 and 10");
+        }
+        return appService.getTop(number);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/names")
-    public List<String> getNameByType(@RequestParam String type){
+    @RequestMapping(method = RequestMethod.GET, value = "/names/{type}")
+    public List<String> getNameByType(@PathVariable String type){
+        if("All".equals(type)){
+            type = null;
+        }
         return appService.getNameByType(type);
     }
 
 
 
-    @RequestMapping(method = RequestMethod.GET, value = "?op=upgrade")
+    @RequestMapping(method = RequestMethod.POST, value = "?op=upgrade")
     public boolean upgrade() {
         return appSourceService.upgrade();
     }
