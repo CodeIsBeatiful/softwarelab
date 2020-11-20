@@ -8,6 +8,16 @@ The software laboratory is a SaaS application based on container technology, and
 
 `Jdk1.8+`, `maven3.2+`, `Docker CE`
 
+### Test
+```
+mvn test
+```
+
+### Build
+```
+mvn clean package
+```
+
 ## Installation
 
 Currently supports MacOS, Linux (CentOS), and plans to support Windows in the future
