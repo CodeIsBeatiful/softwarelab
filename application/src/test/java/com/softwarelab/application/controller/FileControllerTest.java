@@ -22,8 +22,6 @@ public class FileControllerTest extends AbstractBaseTest {
     @Before
     public void setUp() throws Exception {
 
-
-
     }
 
 
@@ -38,8 +36,6 @@ public class FileControllerTest extends AbstractBaseTest {
     public void testGetImage(){
 
     }
-
-
 
 
 }

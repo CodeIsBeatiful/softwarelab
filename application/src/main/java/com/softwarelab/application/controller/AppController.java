@@ -56,7 +56,7 @@ public class AppController extends BaseController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/top/{number}")
     public List<AppInfo> top(@PathVariable int number) {
-        if(number< 0 || number < 10 ){
+        if(number< 0 || number > 10 ){
              throw new RuntimeException("number must in 0 and 10");
         }
         return appService.getTop(number);
