@@ -17,8 +17,6 @@ public class InstanceOperationControllerTest extends AbstractBaseTest {
     @Autowired
     private InstanceController instanceController;
 
-
-
     @Autowired
     private InstanceOperationController operationController;
 

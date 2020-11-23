@@ -1,32 +1,13 @@
 package com.softwarelab.application.controller;
 
 import com.softwarelab.application.AbstractBaseTest;
-import com.softwarelab.application.bean.ContainerInfo;
-import com.softwarelab.application.bean.ContainerPortSetting;
-import com.softwarelab.application.common.DbConst;
 import com.softwarelab.application.entity.App;
 import com.softwarelab.application.entity.AppVersion;
 import com.softwarelab.application.entity.Instance;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.validation.constraints.AssertFalse;
-import javax.validation.constraints.AssertTrue;
-import java.io.File;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.file.StandardOpenOption;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
@@ -38,22 +19,33 @@ public class InstanceControllerTest extends AbstractBaseTest {
     @Autowired
     private InstanceController instanceController;
 
+    @Autowired
+    private AppController appController;
 
+    @Autowired
+    private AppVersionController appVersionController;
 
     private Instance instance;
+    private App app;
+    private AppVersion appVersion;
 
     private final static String[] canSortStr = {"updateTime", "createTime", "runningStatus", "name"};
 
     @Before
     public void setUp() throws Exception {
-        instance =getDemoInstance();
-
+        app = getDemoApp();
+        appVersion = getDemoAppVersion();
+        instance = getDemoInstance();
     }
 
     @Test
     public void testCRUD() {
+        appController.add(app);
+        appVersionController.addVersion(appVersion);
+        instance = getDemoInstance();
         //instance ---> container
         //save instance
+        //todo how to get security user
         instance = instanceController.add(instance);
         Instance savedInstance = instanceController.get(this.instance.getId());
         assertNotNull(savedInstance);
@@ -70,11 +62,13 @@ public class InstanceControllerTest extends AbstractBaseTest {
 
 
     @Test
-    public void list(){
+    public void list() {
+        appController.add(app);
+        appVersionController.addVersion(appVersion);
         instanceController.add(instance);
         int pageNum = 0;
         int pageSize = 5;
-        instanceController.list(pageNum,pageSize,AbstractBaseTest.DEMO_NAME,null,null);
+        instanceController.list(pageNum, pageSize, AbstractBaseTest.DEMO_NAME, null, null);
         //todo
     }
 
