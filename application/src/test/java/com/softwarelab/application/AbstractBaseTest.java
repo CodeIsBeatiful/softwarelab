@@ -52,7 +52,7 @@ public abstract class AbstractBaseTest {
 
     public static final String JAR_PATH = "/target/demo-0.01-SNAPSHOT.jar";
 
-    private static final int DEMO_TARGET_PORT=40001;
+    public static final int DEMO_TARGET_PORT=40001;
 
     private DockerClient dockerClient;
 
@@ -78,7 +78,7 @@ public abstract class AbstractBaseTest {
         LocalDateTime now = LocalDateTime.now();
         App app = new App();
         app.setAuthor("blackstar");
-        app.setName("softwarelab-demo");
+        app.setName(DEMO_NAME);
         app.setDescription("Softwarelab app");
         app.setType("test");
         app.setCreateTime(now);
@@ -104,12 +104,12 @@ public abstract class AbstractBaseTest {
     }
 
     public AppVersion getDemoAppVersion(){
-        App demoApp = getDemoApp();
+        LocalDateTime now = LocalDateTime.now();
         AppVersion appVersion = new AppVersion();
-        appVersion.setAppName(demoApp.getName());
+        appVersion.setAppName(DEMO_NAME);
         appVersion.setVersion(DEMO_VERSION);
-        appVersion.setCreateTime(demoApp.getCreateTime());
-        appVersion.setUpdateTime(demoApp.getUpdateTime());
+        appVersion.setCreateTime(now);
+        appVersion.setUpdateTime(now);
         appVersion.setStatus(DbConst.STATUS_NORMAL);
         appVersion.setDownloadStatus(DbConst.DOWNLOAD_STATUS_INIT);
         return appVersion;

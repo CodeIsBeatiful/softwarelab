@@ -35,7 +35,7 @@ public class DockerContainerServiceImplTest extends AbstractBaseTest {
     @Before
     public void setUp() throws Exception {
         checkTestImage();
-        port = 9187;
+        port = AbstractBaseTest.DEMO_TARGET_PORT;
         List<ContainerPortSetting> ports = new ArrayList<>();
         //machine 5444, container inner port 5432
         ports.add(ContainerPortSetting.builder().targetPort(port).port(8080).build());
