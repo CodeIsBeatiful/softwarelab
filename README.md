@@ -14,8 +14,14 @@ mvn test
 ```
 
 ### Build
+
+* build all
 ```
 mvn clean package
+```
+* build application
+```
+mvn -DskipTests=true clean package -pl application -am
 ```
 
 ## Installation
