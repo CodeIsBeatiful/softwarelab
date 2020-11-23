@@ -35,21 +35,9 @@ public class AppControllerTest extends AbstractBaseTest {
 
     private App app;
 
-    private AppVersion appVersion;
-
     @Before
     public void setUp() throws Exception {
-        LocalDateTime now = LocalDateTime.now();
-        app = new App();
-        app.setAuthor("blackstar");
-        app.setName("hello-world");
-        app.setDescription("Softwarelab app");
-        app.setType("test");
-        app.setCreateTime(now);
-        app.setUpdateTime(now);
-        app.setStatus(0);
-        app.setLogo(getImageBytes());
-        app.setAdditionalInfo("{\"imageName\":\"" + AbstractBaseTest.TEST_IMAGE_TAG + "\",\"ports\":[{\"port\":8080,\"type\":\"http\",\"entrance\":true}]}");
+        app = getDemoApp();
     }
 
     @After
@@ -92,23 +80,6 @@ public class AppControllerTest extends AbstractBaseTest {
 //        }
 
     }
-
-
-    public byte[] getImageBytes() {
-        File file = new File(this.getClass().getClassLoader().getResource(".").getPath() + "/static/image/test.png");
-        assertTrue(file.exists());
-        try (FileChannel channel = FileChannel.open(file.toPath(), StandardOpenOption.READ)) {
-            ByteBuffer allocate = ByteBuffer.allocate((int) channel.size());
-            channel.read(allocate);
-            return allocate.array();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-
-    }
-
-
     @Test
     public void list() {
         IPage<App> pagedApps = appController.list(0, 1, "test");

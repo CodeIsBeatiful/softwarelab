@@ -10,16 +10,11 @@ import com.github.dockerjava.core.command.ExecStartResultCallback;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -51,8 +46,8 @@ public class DockerContainerServiceImplTest extends AbstractBaseTest {
 //                .key("POSTGRES_PASSWORD").value("postgres")
                 .build());
         containerInfo = ContainerInfo.builder()
-                .imageName(AbstractBaseTest.TEST_IMAGE_TAG)
-                .name(AbstractBaseTest.TEST_IMAGE_TAG.replace('/', '_').replace(':', '_'))
+                .imageName(AbstractBaseTest.DEMO_IMAGE_TAG)
+                .name(AbstractBaseTest.DEMO_IMAGE_TAG.replace('/', '_').replace(':', '_'))
                 .ports(ports)
                 .labels(labels)
                 .envs(envs)
@@ -94,7 +89,7 @@ public class DockerContainerServiceImplTest extends AbstractBaseTest {
 
     @Test
     public void testImage() {
-        assertTrue(dockerContainerServiceImpl.hasImage(AbstractBaseTest.TEST_IMAGE_TAG));
+        assertTrue(dockerContainerServiceImpl.hasImage(AbstractBaseTest.DEMO_IMAGE_TAG));
     }
 
     @Test

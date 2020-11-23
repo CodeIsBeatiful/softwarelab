@@ -3,17 +3,30 @@ package com.softwarelab.application.controller;
 import com.softwarelab.application.AbstractBaseTest;
 import com.softwarelab.application.bean.ContainerInfo;
 import com.softwarelab.application.bean.ContainerPortSetting;
+import com.softwarelab.application.common.DbConst;
+import com.softwarelab.application.entity.App;
+import com.softwarelab.application.entity.AppVersion;
 import com.softwarelab.application.entity.Instance;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.constraints.AssertFalse;
+import javax.validation.constraints.AssertTrue;
+import java.io.File;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
@@ -26,33 +39,15 @@ public class InstanceControllerTest extends AbstractBaseTest {
     private InstanceController instanceController;
 
 
-    @Autowired
-    private InstanceOperationController operationController;
-
 
     private Instance instance;
 
-    private int mainPort = 31000;
-
+    private final static String[] canSortStr = {"updateTime", "createTime", "runningStatus", "name"};
 
     @Before
     public void setUp() throws Exception {
+        instance =getDemoInstance();
 
-        instance = new Instance();
-        instance.setUserId(UUID.randomUUID().toString());
-        instance.setName("my_metabase_v0.35.4");
-        instance.setAppName("metabase");
-        instance.setAppVersion("v0.35.4");
-        LocalDateTime now = LocalDateTime.now();
-        instance.setCreateTime(now);
-        instance.setUpdateTime(now);
-        instance.setStatus(0);
-
-        ContainerInfo containerInfo = ContainerInfo.builder()
-                .ports(Arrays.asList(ContainerPortSetting.builder().targetPort(mainPort).port(3000).build()))
-                .envs(new ArrayList<>())
-                .build();
-        instance.setAdditionalInfo(new ObjectMapper().writeValueAsString(containerInfo));
     }
 
     @Test
@@ -64,17 +59,23 @@ public class InstanceControllerTest extends AbstractBaseTest {
         assertNotNull(savedInstance);
         assertNotNull(savedInstance.getId());
         assertNotNull(savedInstance.getName());
-        //start container
-        assertTrue(operationController.operate(this.instance.getId(),"start"));
-        //stop container
-        assertTrue(operationController.operate(this.instance.getId(),"stop"));
-        Instance stopedInstance = instanceController.get(this.instance.getId());
-        System.out.println("instance stop status:"+stopedInstance.getStatus());
+
         //delete instance and remove container
         instanceController.delete(this.instance.getId());
         Instance deleteForeverInstance = instanceController.get(this.instance.getId());
         assertNull(deleteForeverInstance);
-        //todo asset docker container not exist
+
 
     }
+
+
+    @Test
+    public void list(){
+        instanceController.add(instance);
+        int pageNum = 0;
+        int pageSize = 5;
+        instanceController.list(pageNum,pageSize,AbstractBaseTest.DEMO_NAME,null,null);
+        //todo
+    }
+
 }

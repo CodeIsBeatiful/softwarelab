@@ -1,12 +1,20 @@
 package com.softwarelab.application;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.model.Image;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientImpl;
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
 import com.github.dockerjava.transport.DockerHttpClient;
+import com.softwarelab.application.bean.ContainerInfo;
+import com.softwarelab.application.bean.ContainerPortSetting;
+import com.softwarelab.application.common.DbConst;
+import com.softwarelab.application.entity.App;
+import com.softwarelab.application.entity.AppVersion;
+import com.softwarelab.application.entity.Instance;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.maven.shared.invoker.*;
 import org.junit.runner.RunWith;
@@ -15,10 +23,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.TreeSet;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.file.StandardOpenOption;
+import java.time.LocalDateTime;
+import java.util.*;
+
+import static org.junit.Assert.assertTrue;
 
 
 @RunWith(SpringRunner.class)
@@ -33,11 +44,15 @@ public abstract class AbstractBaseTest {
 
     private static final String POM_FILE_NAME="pom.xml";
 
-    private static final String DEMO_NAME="demo";
+    public static final String DEMO_NAME="demo";
 
-    public static final String TEST_IMAGE_TAG = "softwarelab/demo:0.0.1";
+    public static final String DEMO_VERSION ="0.0.1";
+
+    public static final String DEMO_IMAGE_TAG = "softwarelab/"+DEMO_NAME+":"+ DEMO_VERSION;
 
     public static final String JAR_PATH = "/target/demo-0.01-SNAPSHOT.jar";
+
+    private static final int DEMO_TARGET_PORT=40001;
 
     private DockerClient dockerClient;
 
@@ -59,11 +74,76 @@ public abstract class AbstractBaseTest {
 
     }
 
+    public App getDemoApp(){
+        LocalDateTime now = LocalDateTime.now();
+        App app = new App();
+        app.setAuthor("blackstar");
+        app.setName("softwarelab-demo");
+        app.setDescription("Softwarelab app");
+        app.setType("test");
+        app.setCreateTime(now);
+        app.setUpdateTime(now);
+        app.setStatus(DbConst.STATUS_NORMAL);
+        app.setLogo(getImageBytes());
+        app.setAdditionalInfo("{\"imageName\":\"" + AbstractBaseTest.DEMO_IMAGE_TAG + "\",\"ports\":[{\"port\":8080,\"type\":\"http\",\"entrance\":true}]}");
+        return app;
+    }
+
+    private byte[] getImageBytes() {
+        File file = new File(this.getClass().getClassLoader().getResource(".").getPath() + "/static/image/test.png");
+        assertTrue(file.exists());
+        try (FileChannel channel = FileChannel.open(file.toPath(), StandardOpenOption.READ)) {
+            ByteBuffer allocate = ByteBuffer.allocate((int) channel.size());
+            channel.read(allocate);
+            return allocate.array();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+
+    }
+
+    public AppVersion getDemoAppVersion(){
+        App demoApp = getDemoApp();
+        AppVersion appVersion = new AppVersion();
+        appVersion.setAppName(demoApp.getName());
+        appVersion.setVersion(DEMO_VERSION);
+        appVersion.setCreateTime(demoApp.getCreateTime());
+        appVersion.setUpdateTime(demoApp.getUpdateTime());
+        appVersion.setStatus(DbConst.STATUS_NORMAL);
+        appVersion.setDownloadStatus(DbConst.DOWNLOAD_STATUS_INIT);
+        return appVersion;
+    }
+
+    public Instance getDemoInstance(){
+
+        LocalDateTime now = LocalDateTime.now();
+        Instance instance = new Instance();
+        instance.setUserId(UUID.randomUUID().toString());
+        instance.setName("my-softwarelab-demo");
+        instance.setAppName(DEMO_NAME);
+        instance.setAppVersion(DEMO_VERSION);
+        instance.setCreateTime(now);
+        instance.setUpdateTime(now);
+        instance.setStatus(DbConst.STATUS_NORMAL);
+
+        ContainerInfo containerInfo = ContainerInfo.builder()
+                .ports(Arrays.asList(ContainerPortSetting.builder().targetPort(DEMO_TARGET_PORT).port(8080).build()))
+                .envs(new ArrayList<>())
+                .build();
+        try {
+            instance.setAdditionalInfo(new ObjectMapper().writeValueAsString(containerInfo));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return instance;
+    }
+
 
     public void checkTestImage() {
         //check image exists
         // docker build demo -f demo/Dockerfile -t test
-        List<Image> images = dockerClient.listImagesCmd().withImageNameFilter(TEST_IMAGE_TAG).exec();
+        List<Image> images = dockerClient.listImagesCmd().withImageNameFilter(DEMO_IMAGE_TAG).exec();
         if (images.size() == 0) {
             //mush build demo first
             //must install maven 3.0.0+
@@ -80,7 +160,7 @@ public abstract class AbstractBaseTest {
 
     protected void buildImage() {
         HashSet<String> sets = new HashSet<>();
-        sets.add(TEST_IMAGE_TAG);
+        sets.add(DEMO_IMAGE_TAG);
         dockerClient.buildImageCmd()
                 .withBaseDirectory(new File(basePath))
                 .withDockerfile(new File(basePath + DOCKER_FILE_NAME))
