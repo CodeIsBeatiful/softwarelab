@@ -1,6 +1,7 @@
 package com.softwarelab.application.service;
 
 
+import com.github.dockerjava.api.model.Container;
 import com.softwarelab.application.bean.ContainerInfo;
 import com.softwarelab.application.exception.PortException;
 import com.softwarelab.application.service.impl.DockerContainerServiceImpl;
@@ -33,6 +34,8 @@ public interface ContainerService {
     DockerContainerServiceImpl.PullImageCallback pullImage(String imageName);
 
     void removeImage(String imageName);
+
+    Container getContainer(ContainerInfo containerInfo);
 
     ExecStartResultCallback runCommand(String containerId, String command, OutputStream outputStream);
 }
