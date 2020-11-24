@@ -85,9 +85,7 @@ public class DockerContainerServiceImpl implements ContainerService {
                     .withEnv(envs)
 //                    .withHostConfig(hostConfig)
                     .exec();
-            System.out.println("kasi");
             dockerClient.startContainerCmd(createContainer.getId()).exec();
-            System.out.println("kasi end");
             containerInfo.setId(createContainer.getId());
 
         } else {

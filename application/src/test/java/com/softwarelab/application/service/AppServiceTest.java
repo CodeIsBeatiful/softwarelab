@@ -19,31 +19,29 @@ public class AppServiceTest extends AbstractBaseTest {
     @Autowired
     private IAppService appService;
 
+    private App demoApp;
+
     @Before
     public void setUp() throws Exception {
-
+        demoApp = getDemoApp();
+        appService.save(demoApp);
     }
 
     @Test
     public void getNameByType() {
-        App demoApp = getDemoApp();
-        appService.save(demoApp);
+
        assertTrue(appService.getNameByType("null").size() == 0);
        assertTrue(appService.getNameByType(demoApp.getType()).size() == 1);
     }
 
     @Test
     public void getByName() {
-        App demoApp = getDemoApp();
-        appService.save(demoApp);
         assertTrue(appService.getByName("null") == null);
         assertTrue(appService.getByName(demoApp.getName()) != null);
     }
 
     @Test
     public void getTop() {
-        App demoApp = getDemoApp();
-        appService.save(demoApp);
         assertTrue(appService.getTop(0).size() >= 0);
         assertTrue(appService.getTop(1).size() >= 1);
         demoApp.setName("demo2");

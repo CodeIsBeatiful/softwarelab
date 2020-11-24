@@ -51,6 +51,9 @@ public class AppVersionServiceImpl extends ServiceImpl<AppVersionMapper, AppVers
     public AppVersion getVersionByNameAndVersion(String appName, String version) {
         AppVersion appVersion = this.getOne(new QueryWrapper<AppVersion>().eq(APP_NAME, appName).eq(VERSION, version));
         App app = appService.getByName(appName);
+        if (appVersion == null) {
+            return null;
+        }
         try {
             if (appVersion.getAdditionalInfo() == null) {
                 appVersion.setAdditionalInfo(app.getAdditionalInfo());

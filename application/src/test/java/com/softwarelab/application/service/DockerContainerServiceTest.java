@@ -119,7 +119,6 @@ public class DockerContainerServiceTest extends AbstractBaseTest {
             containerService.start(containerInfo);
             ExecStartResultCallback execStartResultCallback = containerService.runCommand(containerInfo.getId(), command, out);
             execStartResultCallback.awaitCompletion();
-            System.out.println("for what");
             assertTrue(new String(out.toByteArray()).startsWith("total"));
         } catch (IOException e) {
             e.printStackTrace();
@@ -129,7 +128,6 @@ public class DockerContainerServiceTest extends AbstractBaseTest {
             e.printStackTrace();
         } finally {
             if(containerInfo.getId() != null){
-                System.out.println("stop");
                 containerService.stop(containerInfo);
                 containerService.remove(containerInfo);
             }
