@@ -1,4 +1,4 @@
-package com.softwarelab.application.service.impl;
+package com.softwarelab.application.service;
 
 import com.softwarelab.application.AbstractBaseTest;
 import com.softwarelab.application.bean.ContainerEnvSetting;
@@ -8,6 +8,7 @@ import com.softwarelab.application.exception.PortException;
 import com.github.dockerjava.api.model.Container;
 import com.github.dockerjava.core.command.ExecStartResultCallback;
 import com.softwarelab.application.service.ContainerService;
+import com.softwarelab.application.service.impl.DockerContainerServiceImpl;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;

@@ -1,4 +1,4 @@
-package com.softwarelab.application.service.impl;
+package com.softwarelab.application.service;
 
 import com.softwarelab.application.AbstractBaseTest;
 import com.softwarelab.application.entity.App;
@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import static org.junit.Assert.*;
 
 @Transactional
-public class AppExtensionServiceImplTest extends AbstractBaseTest {
+public class AppExtensionServiceTest extends AbstractBaseTest {
 
 
     @Autowired

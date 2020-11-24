@@ -1,4 +1,4 @@
-package com.softwarelab.application.service.impl;
+package com.softwarelab.application.service;
 
 import com.softwarelab.application.AbstractBaseTest;
 import com.softwarelab.application.bean.AppInfo;
@@ -14,7 +14,7 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 @Transactional
-public class AppServiceImplTest extends AbstractBaseTest {
+public class AppServiceTest extends AbstractBaseTest {
 
     @Autowired
     private IAppService appService;
