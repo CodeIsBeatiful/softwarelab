@@ -15,6 +15,7 @@ import com.softwarelab.application.common.DbConst;
 import com.softwarelab.application.entity.App;
 import com.softwarelab.application.entity.AppVersion;
 import com.softwarelab.application.entity.Instance;
+import com.softwarelab.application.entity.SysUser;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.maven.shared.invoker.*;
 import org.junit.runner.RunWith;
@@ -48,7 +49,9 @@ public abstract class AbstractBaseTest {
 
     public static final String DEMO_VERSION ="0.0.1";
 
-    public static final String DEMO_IMAGE_TAG = "softwarelab/"+DEMO_NAME+":"+ DEMO_VERSION;
+    public static final String DEMO_IMAGE="softwarelab/"+DEMO_NAME;
+
+    public static final String DEMO_IMAGE_TAG = DEMO_IMAGE+":"+ DEMO_VERSION;
 
     public static final String JAR_PATH = "/target/demo-0.01-SNAPSHOT.jar";
 
@@ -74,6 +77,19 @@ public abstract class AbstractBaseTest {
 
     }
 
+    public SysUser getDemoUser(){
+        LocalDateTime now = LocalDateTime.now();
+        SysUser sysUser = new SysUser();
+        sysUser.setId(UUID.randomUUID().toString());
+        sysUser.setUsername("test");
+        sysUser.setPassword("123456");
+        sysUser.setMail("test@test.com");
+        sysUser.setCreateTime(now);
+        sysUser.setUpdateTime(now);
+        sysUser.setStatus(DbConst.STATUS_NORMAL);
+        return sysUser;
+    }
+
     public App getDemoApp(){
         LocalDateTime now = LocalDateTime.now();
         App app = new App();
@@ -85,7 +101,7 @@ public abstract class AbstractBaseTest {
         app.setUpdateTime(now);
         app.setStatus(DbConst.STATUS_NORMAL);
         app.setLogo(getImageBytes());
-        app.setAdditionalInfo("{\"imageName\":\"" + AbstractBaseTest.DEMO_IMAGE_TAG + "\",\"ports\":[{\"port\":8080,\"type\":\"http\",\"entrance\":true}]}");
+        app.setAdditionalInfo("{\"imageName\":\"" + AbstractBaseTest.DEMO_IMAGE + "\",\"ports\":[{\"port\":8080,\"type\":\"http\",\"entrance\":true}]}");
         return app;
     }
 
@@ -128,7 +144,7 @@ public abstract class AbstractBaseTest {
         instance.setStatus(DbConst.STATUS_NORMAL);
 
         ContainerInfo containerInfo = ContainerInfo.builder()
-                .ports(Arrays.asList(ContainerPortSetting.builder().targetPort(DEMO_TARGET_PORT).port(8080).build()))
+                .ports(Arrays.asList(ContainerPortSetting.builder().targetPort(DEMO_TARGET_PORT).port(8080).entrance(true).type("http").build()))
                 .envs(new ArrayList<>())
                 .build();
         try {

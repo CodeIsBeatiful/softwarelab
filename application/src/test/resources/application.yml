@@ -43,3 +43,6 @@ softwarelab:
   checker:
     enabled: true
     sleepMillSeconds: 500
+
+test:
+  useNetwork: true
