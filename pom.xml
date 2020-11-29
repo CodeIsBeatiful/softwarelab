@@ -6,6 +6,7 @@
     <modules>
         <module>application</module>
         <module>demo</module>
+        <module>ui</module>
     </modules>
     <groupId>com.blackstar</groupId>
     <artifactId>softwarelab</artifactId>
