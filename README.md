@@ -6,7 +6,7 @@ The software laboratory is a SaaS application based on container technology, and
 
 ### Preparation
 
-`Jdk1.8+`, `maven3.2+`, `Docker CE`
+`Jdk1.8+`, `maven3.2+`, `Docker CE`、`Npm6.14.0+`
 
 ### Test
 ```
@@ -19,10 +19,16 @@ mvn test
 ```
 mvn clean package
 ```
-* build application
+* build backend
 ```
 mvn -DskipTests=true clean package -pl application -am
 ```
+* build frontend
+```
+cd ui
+npm run build
+```
+
 
 ## Installation
 
