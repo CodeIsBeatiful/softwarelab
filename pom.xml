@@ -8,7 +8,7 @@
         <module>demo</module>
         <module>ui</module>
     </modules>
-    <groupId>com.blackstar</groupId>
+    <groupId>com.cib</groupId>
     <artifactId>softwarelab</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>softwarelab</name>
@@ -29,6 +29,9 @@
         <jna.version>5.6.0</jna.version>
         <okhttp-version>2.7.5</okhttp-version>
         <maven-invoker.version>3.0.1</maven-invoker.version>
+        <commons-io.version>2.5</commons-io.version>
+        <velocity.version>1.7</velocity.version>
+        <velocity-tools.version>2.0</velocity-tools.version>
     </properties>
 
     <dependencies>
@@ -113,6 +116,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.5.1</version>
                 <configuration>
                     <source>8</source>
                     <target>8</target>
