@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<assembly>
+
+  <id>${project.version}</id>
+
+  <!-- package type:zip、tar、tar.gz (or tgz)、tar.bz2 (or tbz2)、jar、dir、war-->
+  <formats>
+    <format>jar</format>
+  </formats>
+
+  <includeBaseDirectory>false</includeBaseDirectory>
+
+  <fileSets>
+    <fileSet>
+      <directory>dist</directory>
+      <outputDirectory>public</outputDirectory>
+      <fileMode>0644</fileMode>
+    </fileSet>
+  </fileSets>
+
+</assembly>
