@@ -101,6 +101,9 @@ public class DockerContainerServiceImpl implements ContainerService {
 
     private Map<String, String> getLabelMap(List<String> labels) {
         Map<String, String> labelMap = new HashMap<>();
+        if(labels == null){
+            return labelMap;
+        }
         labels.forEach(str -> {
             String[] split = str.split(":");
             labelMap.put(split[0], split[1]);

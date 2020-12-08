@@ -133,7 +133,9 @@ public class InstanceServiceImpl extends ServiceImpl<InstanceMapper, Instance> i
     @Override
     public void add(String userId, Instance instance) {
         SysUser user = userService.getById(userId);
-        instance.setId(UUID.randomUUID().toString());
+        if(instance.getId() == null ){
+            instance.setId(UUID.randomUUID().toString());
+        }
         ContainerInfo containerInfo = generateContainerInfo(user, instance);
         try {
             instance.setAdditionalInfo(objectMapper.writeValueAsString(containerInfo));

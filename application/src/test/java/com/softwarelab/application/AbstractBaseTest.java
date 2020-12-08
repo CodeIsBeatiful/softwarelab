@@ -47,6 +47,10 @@ public abstract class AbstractBaseTest {
 
     public static final String DEMO_NAME="demo";
 
+    public static final String HELLO_WORLD_NAME="hello-world";
+
+    public static final String LATEST_VERSION="latest";
+
     public static final String DEMO_VERSION ="0.0.1";
 
     public static final String DEMO_IMAGE="softwarelab/"+DEMO_NAME;
@@ -54,6 +58,8 @@ public abstract class AbstractBaseTest {
     public static final String DEMO_IMAGE_TAG = DEMO_IMAGE+":"+ DEMO_VERSION;
 
     public static final String JAR_PATH = "/target/demo-0.01-SNAPSHOT.jar";
+
+    public static final String TEST_APP_TYPE="test";
 
     public static final int DEMO_TARGET_PORT=40001;
 
@@ -93,30 +99,16 @@ public abstract class AbstractBaseTest {
     public App getDemoApp(){
         LocalDateTime now = LocalDateTime.now();
         App app = new App();
-        app.setAuthor("blackstar");
+        app.setAuthor("Blackstar");
         app.setName(DEMO_NAME);
         app.setDescription("Softwarelab app");
-        app.setType("test");
+        app.setType(TEST_APP_TYPE);
         app.setCreateTime(now);
         app.setUpdateTime(now);
         app.setStatus(DbConst.STATUS_NORMAL);
         app.setLogo(getImageBytes());
         app.setAdditionalInfo("{\"imageName\":\"" + AbstractBaseTest.DEMO_IMAGE + "\",\"ports\":[{\"port\":8080,\"type\":\"http\",\"entrance\":true}]}");
         return app;
-    }
-
-    private byte[] getImageBytes() {
-        File file = new File(this.getClass().getClassLoader().getResource(".").getPath() + "/static/image/test.png");
-        assertTrue(file.exists());
-        try (FileChannel channel = FileChannel.open(file.toPath(), StandardOpenOption.READ)) {
-            ByteBuffer allocate = ByteBuffer.allocate((int) channel.size());
-            channel.read(allocate);
-            return allocate.array();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return null;
-
     }
 
     public AppVersion getDemoAppVersion(){
@@ -154,6 +146,50 @@ public abstract class AbstractBaseTest {
         }
         return instance;
     }
+
+    public App getHelloWorldApp(){
+        LocalDateTime now = LocalDateTime.now();
+        App app = new App();
+        app.setAuthor("Docker");
+        app.setName(HELLO_WORLD_NAME);
+        app.setDescription("Hello World! (an example of minimal Dockerization)");
+        app.setType(TEST_APP_TYPE);
+        app.setCreateTime(now);
+        app.setUpdateTime(now);
+        app.setStatus(DbConst.STATUS_NORMAL);
+        app.setLogo(getImageBytes());
+        app.setAdditionalInfo("{\"imageName\":\"" + AbstractBaseTest.HELLO_WORLD_NAME + "\"}");
+        return app;
+    }
+
+    public AppVersion getHelloWorldAppVersion(){
+        LocalDateTime now = LocalDateTime.now();
+        AppVersion appVersion = new AppVersion();
+        appVersion.setAppName(HELLO_WORLD_NAME);
+        appVersion.setVersion(LATEST_VERSION);
+        appVersion.setCreateTime(now);
+        appVersion.setUpdateTime(now);
+        appVersion.setStatus(DbConst.STATUS_NORMAL);
+        appVersion.setDownloadStatus(DbConst.DOWNLOAD_STATUS_INIT);
+        return appVersion;
+    }
+
+
+    private byte[] getImageBytes() {
+        File file = new File(this.getClass().getClassLoader().getResource(".").getPath() + "/static/image/test.png");
+        assertTrue(file.exists());
+        try (FileChannel channel = FileChannel.open(file.toPath(), StandardOpenOption.READ)) {
+            ByteBuffer allocate = ByteBuffer.allocate((int) channel.size());
+            channel.read(allocate);
+            return allocate.array();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+
+    }
+
+
 
 
     public void checkTestImage() {

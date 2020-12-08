@@ -14,7 +14,7 @@ import static org.junit.Assert.*;
 public class AppSourceServiceTest extends AbstractBaseTest {
 
 
-    @Value("${test.useNetwork")
+    @Value("${test.useNetwork}")
     private boolean useNetwork;
 
     @Autowired
@@ -27,9 +27,10 @@ public class AppSourceServiceTest extends AbstractBaseTest {
 
     @Test
     public void upgrade() {
-        if(useNetwork){
-            //todo
+        if(!useNetwork){
+            return;
         }
+        //todo
 
     }
 

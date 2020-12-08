@@ -50,6 +50,9 @@ public class DataInitService {
             log.info("begin init data from {}", INIT_SOURCE_FILE_NAME);
             //todo check package exists？
             String dataDir = System.getProperty("data.path");
+            if(dataDir == null) {
+                return;
+            }
             File file = new File(dataDir + File.separator + INIT_SOURCE_FILE_NAME);
             if (file.exists()) {
                 //unzip to source package
