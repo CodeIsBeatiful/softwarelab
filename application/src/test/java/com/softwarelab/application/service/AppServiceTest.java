@@ -1,37 +1,25 @@
 package com.softwarelab.application.service;
 
-import com.softwarelab.application.AbstractBaseTest;
-import com.softwarelab.application.bean.AppInfo;
 import com.softwarelab.application.entity.App;
-import com.softwarelab.application.service.IAppService;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 import static org.junit.Assert.*;
 
-@Transactional
-public class AppServiceTest extends AbstractBaseTest {
+public class AppServiceTest extends AbstractServiceBaseTest {
 
     @Autowired
     private IAppService appService;
 
-    private App demoApp;
+    private App demoApp  = getDemoApp();
 
-    @Before
-    public void setUp() throws Exception {
-        demoApp = getDemoApp();
-        appService.save(demoApp);
-    }
 
     @Test
     public void getNameByType() {
-
        assertTrue(appService.getNameByType("null").size() == 0);
-       assertTrue(appService.getNameByType(demoApp.getType()).size() == 1);
+       assertTrue(appService.getNameByType(TEST_APP_TYPE).size() == 2);
     }
 
     @Test

@@ -1,13 +1,11 @@
 package com.softwarelab.application.service;
 
-import com.softwarelab.application.AbstractBaseTest;
 import com.softwarelab.application.bean.ContainerEnvSetting;
 import com.softwarelab.application.bean.ContainerInfo;
 import com.softwarelab.application.bean.ContainerPortSetting;
 import com.softwarelab.application.exception.PortException;
 import com.github.dockerjava.api.model.Container;
 import com.github.dockerjava.core.command.ExecStartResultCallback;
-import com.softwarelab.application.service.ContainerService;
 import com.softwarelab.application.service.impl.DockerContainerServiceImpl;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -15,6 +13,7 @@ import com.squareup.okhttp.Response;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -24,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.Assert.*;
 
 
-public class DockerContainerServiceTest extends AbstractBaseTest {
+public class DockerContainerServiceTest extends AbstractServiceBaseTest {
 
 
     @Autowired
@@ -32,15 +31,13 @@ public class DockerContainerServiceTest extends AbstractBaseTest {
 
     private ContainerInfo containerInfo;
 
-    private int port;
 
     @Before
     public void setUp() throws Exception {
-        checkTestImage();
-        port = AbstractBaseTest.DEMO_TARGET_PORT;
+        super.setUp();
         List<ContainerPortSetting> ports = new ArrayList<>();
         //machine 5444, container inner port 5432
-        ports.add(ContainerPortSetting.builder().targetPort(port).port(8080).build());
+        ports.add(ContainerPortSetting.builder().targetPort(DEMO_INSTANCE_TARGET_PORT).port(8080).build());
         List<String> labels = new ArrayList<>();
         labels.add("test:demo");
         List<ContainerEnvSetting> envs = new ArrayList<>();
@@ -48,8 +45,8 @@ public class DockerContainerServiceTest extends AbstractBaseTest {
 //                .key("POSTGRES_PASSWORD").value("postgres")
                 .build());
         containerInfo = ContainerInfo.builder()
-                .imageName(AbstractBaseTest.DEMO_IMAGE_TAG)
-                .name(AbstractBaseTest.DEMO_IMAGE_TAG.replace('/', '_').replace(':', '_'))
+                .imageName(AbstractServiceBaseTest.DEMO_APP_IMAGE_TAG)
+                .name(AbstractServiceBaseTest.DEMO_APP_IMAGE_TAG.replace('/', '_').replace(':', '_'))
                 .ports(ports)
                 .labels(labels)
                 .envs(envs)
@@ -72,12 +69,10 @@ public class DockerContainerServiceTest extends AbstractBaseTest {
             //get Info from Url
             OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder()
-                    .url("http://localhost:" + port)
+                    .url("http://localhost:" + DEMO_INSTANCE_TARGET_PORT)
                     .build();
             Response response = client.newCall(request).execute();
             assertEquals("hello,softwarelab", response.body().string());
-            ;
-
         } catch (InterruptedException | IOException e) {
             e.printStackTrace();
         } finally {
@@ -91,12 +86,12 @@ public class DockerContainerServiceTest extends AbstractBaseTest {
 
     @Test
     public void testImage() {
-        assertTrue(containerService.hasImage(AbstractBaseTest.DEMO_IMAGE_TAG));
+        assertTrue(containerService.hasImage(AbstractServiceBaseTest.DEMO_APP_IMAGE_TAG));
     }
 
     @Test
     public void testPullImage() {
-        String imageName = "hello-world:latest";
+        String imageName = HELLO_WORLD_APP_NAME+":"+LATEST_VERSION;
         DockerContainerServiceImpl.PullImageCallback responseItemAdapter = containerService.pullImage(imageName);
         try {
             while (!responseItemAdapter.isCompleted(1, TimeUnit.SECONDS)) {

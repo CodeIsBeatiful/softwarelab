@@ -1,6 +1,5 @@
 package com.softwarelab.application.service;
 
-import com.softwarelab.application.AbstractBaseTest;
 import com.softwarelab.application.entity.App;
 import com.softwarelab.application.entity.AppVersion;
 import org.junit.Before;
@@ -10,32 +9,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
 
-@Transactional
-public class AppVersionServiceTest extends AbstractBaseTest {
+public class AppVersionServiceTest extends AbstractServiceBaseTest {
 
 
     @Autowired
     private IAppVersionService appVersionService;
 
-    @Autowired
-    private IAppService appService;
+    private App demoApp = getDemoApp();
 
-    private App demoApp;
-
-    private AppVersion demoAppVersion;
-
-
-    @Before
-    public void setUp() throws Exception {
-        demoApp = getDemoApp();
-        appService.save(demoApp);
-        demoAppVersion = getDemoAppVersion();
-        appVersionService.save(demoAppVersion);
-
-    }
 
     @Test
     public void getSimpleByAppName() {
@@ -60,6 +43,7 @@ public class AppVersionServiceTest extends AbstractBaseTest {
 
     @Test
     public void getVersionByNameAndVersion() {
+        AppVersion demoAppVersion = getDemoAppVersion();
         assertTrue(appVersionService.getVersionByNameAndVersion("null","null")  == null);
         AppVersion appVersion = appVersionService.getVersionByNameAndVersion(demoApp.getName(), demoAppVersion.getVersion());
         assertTrue(appVersion != null);
