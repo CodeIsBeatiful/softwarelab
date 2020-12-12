@@ -156,7 +156,7 @@ public abstract class AbstractBaseTest {
     public void setUp() throws Exception {
         if(!isInit){
             checkTestImage();
-            //todo use initdata.sql to init user\app\appversion\instance
+
             userService.save(getTestUser());
 
             appService.save(getHelloWorldApp());

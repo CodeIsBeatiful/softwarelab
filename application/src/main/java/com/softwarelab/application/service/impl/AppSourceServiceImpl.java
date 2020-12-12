@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -49,6 +50,8 @@ public class AppSourceServiceImpl extends ServiceImpl<AppSourceMapper, AppSource
     private String appsDir = targetDir + File.separator + "apps";
 
     private String logosDir = targetDir + File.separator + "logos";
+
+    private String versionFileName = "version";
 
     private int ignoreDepth = 1;
 
@@ -148,9 +151,16 @@ public class AppSourceServiceImpl extends ServiceImpl<AppSourceMapper, AppSource
                 return false;
             }
         }
+        byte[] versionContext = FileUtil.getContent(targetDir + File.separator + versionFileName);
+        if (versionContext == null) {
+            log.error("version file can't find");
+            return false;
+
+        }
         appSourceService.save(AppSource.builder()
                 .id("00000000-0000-0000-0000-000000000000")
-                .version("0.0.0")
+                //set true version
+                .version(new String(versionContext, StandardCharsets.UTF_8))
                 .repository(null)
                 .createTime(now)
                 .updateTime(now)

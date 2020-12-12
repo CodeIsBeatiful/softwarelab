@@ -6,6 +6,7 @@ import com.softwarelab.application.bean.HardwareInfo;
 import com.softwarelab.application.checker.HardwareChecker;
 import com.softwarelab.application.entity.Instance;
 import com.softwarelab.application.service.IAppService;
+import com.softwarelab.application.service.IAppSourceService;
 import com.softwarelab.application.service.IInstanceService;
 import com.softwarelab.application.common.BaseController;
 import com.softwarelab.application.common.DbConst;
@@ -44,6 +45,9 @@ public class StatisticsController extends BaseController {
     @Autowired
     private HardwareChecker hardwareChecker;
 
+    @Autowired
+    private IAppSourceService appSourceService;
+
     public StatisticsController() {
     }
 
@@ -67,9 +71,10 @@ public class StatisticsController extends BaseController {
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/software")
-    public Map<String,Integer> getSoftwareInfo() {
+    public Map<String,Object> getSoftwareInfo() {
 
-        HashMap<String, Integer> map = new HashMap<>();
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("appStoreVersion",appSourceService.list().get(0).getVersion());
         map.put("appTotal",appService.count());
         map.put("instanceTotal",instanceService.count());
         map.put("runningInstanceTotal",instanceService.count(new QueryWrapper<Instance>().eq(DbConst.COLUMN_RUNNING_STATUS, DbConst.RUNNING_STATUS_START)));

@@ -22,6 +22,19 @@
           </div>
           <div class="card-panel-description">
             <div class="card-panel-text">
+              App Store Version
+            </div>
+            <span class="card-panel-num">{{software.appStoreVersion}}</span>
+          </div>
+        </div>
+      </el-col>
+      <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
+        <div class="card-panel">
+          <div class="card-panel-icon-wrapper icon-software">
+            <svg-icon icon-class="software" class-name="card-panel-icon" />
+          </div>
+          <div class="card-panel-description">
+            <div class="card-panel-text">
               App Total
             </div>
             <count-to :start-val="0" :end-val="software.appTotal" :duration="2600" class="card-panel-num" />
@@ -35,22 +48,10 @@
           </div>
           <div class="card-panel-description">
             <div class="card-panel-text">
-              Instance Total
+              Instance
             </div>
+            <count-to :start-val="0" :end-val="software.runningInstanceTotal" :duration="2600" class="card-panel-num" />/
             <count-to :start-val="0" :end-val="software.instanceTotal" :duration="2600" class="card-panel-num" />
-          </div>
-        </div>
-      </el-col>
-      <el-col :xs="12" :sm="12" :lg="6" class="card-panel-col">
-        <div class="card-panel">
-          <div class="card-panel-icon-wrapper icon-software">
-            <svg-icon icon-class="software" class-name="card-panel-icon" />
-          </div>
-          <div class="card-panel-description">
-            <div class="card-panel-text">
-              Running Instance
-            </div>
-            <count-to :start-val="0" :end-val="software.runningInstanceTotal" :duration="2600" class="card-panel-num" />
           </div>
         </div>
       </el-col>
