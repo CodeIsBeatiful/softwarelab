@@ -3,10 +3,7 @@ package com.softwarelab.application.config;
 import com.softwarelab.application.bean.SecurityUser;
 import com.softwarelab.application.checker.ImageChecker;
 import com.softwarelab.application.entity.Instance;
-import com.softwarelab.application.service.ContainerService;
-import com.softwarelab.application.service.IAppService;
-import com.softwarelab.application.service.IAppVersionService;
-import com.softwarelab.application.service.IInstanceService;
+import com.softwarelab.application.service.*;
 import com.softwarelab.application.websocket.MessageWebSocketHandler;
 import com.softwarelab.application.websocket.TerminalWebSocketHandler;
 import com.softwarelab.application.common.DbConst;
@@ -53,6 +50,8 @@ public class WebSocketConfig implements WebSocketConfigurer {
     @Autowired
     private IAppVersionService appVersionService;
 
+    @Autowired
+    private IAppSourceService appSourceService;
 
     @Bean
     public ServletServerContainerFactoryBean createWebSocketContainer() {
@@ -78,7 +77,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
                             return false;
                         } else {
                             if (((ExceptionWebSocketHandlerDecorator) wsHandler).getLastHandler() instanceof TerminalWebSocketHandler) {
-                                return handshakeTerminal(request,instanceService);
+                                return handshakeTerminal(request, instanceService);
                             }
                             return true;
                         }
@@ -113,7 +112,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Bean
     public MessageWebSocketHandler newMessageHandler() {
-        return new MessageWebSocketHandler(imageChecker, containerService, appService,appVersionService);
+        return new MessageWebSocketHandler(imageChecker, containerService, appService, appVersionService, appSourceService);
     }
 
     protected SecurityUser getCurrentUser() {

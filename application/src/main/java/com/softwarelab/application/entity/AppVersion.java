@@ -3,6 +3,7 @@ package com.softwarelab.application.entity;
 import java.time.LocalDateTime;
 import java.io.Serializable;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -25,8 +26,10 @@ public class AppVersion implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @TableField
     private String appName;
 
+    @TableField
     private String version;
 
     private String additionalInfo;
@@ -38,6 +41,7 @@ public class AppVersion implements Serializable {
     private Integer status;
 
     private Integer downloadStatus;
+
 
 
 }

@@ -8,6 +8,7 @@ import com.softwarelab.application.entity.App;
 import com.softwarelab.application.entity.AppVersion;
 import com.softwarelab.application.service.ContainerService;
 import com.softwarelab.application.service.IAppService;
+import com.softwarelab.application.service.IAppSourceService;
 import com.softwarelab.application.service.IAppVersionService;
 import com.softwarelab.application.common.DbConst;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,13 +30,16 @@ public class MessageWebSocketHandler extends TextWebSocketHandler {
 
     private final IAppVersionService appVersionService;
 
+    private final IAppSourceService appSourceService;
+
     private ObjectMapper objectMapper = new ObjectMapper();
 
-    public MessageWebSocketHandler(ImageChecker imageChecker, ContainerService containerService,IAppService appService,IAppVersionService appVersionService) {
+    public MessageWebSocketHandler(ImageChecker imageChecker, ContainerService containerService, IAppService appService, IAppVersionService appVersionService, IAppSourceService appSourceService) {
         this.imageChecker = imageChecker;
         this.containerService = containerService;
         this.appService = appService;
         this.appVersionService = appVersionService;
+        this.appSourceService = appSourceService;
     }
 
     @Override
@@ -52,6 +56,8 @@ public class MessageWebSocketHandler extends TextWebSocketHandler {
             case "image":
                 processImageMessage(session, webSocketRequestMessage);
                 break;
+            case "app":
+                processAppMessage(session, webSocketRequestMessage);
             default:
                 break;
         }
@@ -60,7 +66,6 @@ public class MessageWebSocketHandler extends TextWebSocketHandler {
     }
 
     private void processImageMessage(WebSocketSession session, WebSocketRequestMessage message) {
-
         switch (message.getOperate()) {
             case "download":
                 processImageDownload(session, message.getContent());
@@ -68,7 +73,19 @@ public class MessageWebSocketHandler extends TextWebSocketHandler {
             default:
                 break;
         }
+    }
 
+    private void processAppMessage(WebSocketSession session, WebSocketRequestMessage message) {
+        switch (message.getOperate()) {
+            case "upgrade":
+                processAppUpgrade(session, message.getContent());
+                break;
+            case "reload":
+                processAppReload(session, message.getContent());
+                break;
+            default:
+                break;
+        }
     }
 
     private void processImageDownload(WebSocketSession session, String content) {
@@ -91,24 +108,24 @@ public class MessageWebSocketHandler extends TextWebSocketHandler {
         try {
             ContainerSetting containerSetting = objectMapper.readValue(app.getAdditionalInfo(), ContainerSetting.class);
             imageName = containerSetting.getImageName();
-            if(imageName == null) {
+            if (imageName == null) {
                 responseMessage = new WebSocketResponseMessage("failed", content + " can't find image");
                 session.sendMessage(new TextMessage(objectMapper.writeValueAsBytes(responseMessage)));
             }
         } catch (IOException e) {
             //do nothing
         }
-        if (!containerService.hasImage(appVersion.getAppName()+":"+appVersion.getVersion())) {
+        if (!containerService.hasImage(appVersion.getAppName() + ":" + appVersion.getVersion())) {
             imageChecker.add(appVersion, WebSocketSessionAndCallback.builder()
                     .webSocketSession(session)
-                    .callback(containerService.pullImage(imageName+":"+appVersion.getVersion()))
+                    .callback(containerService.pullImage(imageName + ":" + appVersion.getVersion()))
                     .build());
             responseMessage = new WebSocketResponseMessage("success", content + " begin download");
         } else {
             appVersionService.update(new UpdateWrapper<AppVersion>()
-                    .eq(DbConst.COLUMN_APP_NAME,appVersion.getAppName())
-                    .eq(DbConst.COLUMN_VERSION,appVersion.getVersion())
-                    .set(DbConst.COLUMN_DOWNLOAD_STATUS,DbConst.DOWNLOAD_STATUS_FINISH));
+                    .eq(DbConst.COLUMN_APP_NAME, appVersion.getAppName())
+                    .eq(DbConst.COLUMN_VERSION, appVersion.getVersion())
+                    .set(DbConst.COLUMN_DOWNLOAD_STATUS, DbConst.DOWNLOAD_STATUS_FINISH));
             responseMessage = new WebSocketResponseMessage("success", content + " is exist");
         }
         try {
@@ -117,6 +134,28 @@ public class MessageWebSocketHandler extends TextWebSocketHandler {
             // do nothing
         }
 
+    }
+
+    private void processAppUpgrade(WebSocketSession session, String content) {
+        //todo if is upgrading，ignore this time
+        String detail = appSourceService.upgrade() ? "success" : "failed";
+        WebSocketResponseMessage responseMessage = new WebSocketResponseMessage("success", "Upgrade " + detail);
+        try {
+            session.sendMessage(new TextMessage(objectMapper.writeValueAsBytes(responseMessage)));
+        } catch (IOException e) {
+            // do nothing
+        }
+    }
+
+    private void processAppReload(WebSocketSession session, String content) {
+        //todo if is reloading，ignore this time
+        String detail = appSourceService.loadToDb() ? "success" : "failed";
+        WebSocketResponseMessage responseMessage = new WebSocketResponseMessage("success", "Reload " + detail);
+        try {
+            session.sendMessage(new TextMessage(objectMapper.writeValueAsBytes(responseMessage)));
+        } catch (IOException e) {
+            // do nothing
+        }
     }
 
 

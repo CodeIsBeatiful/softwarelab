@@ -88,6 +88,8 @@
 import { getTop, getList, getVersionsByAppName } from '@/api/app'
 import { getToken } from '@/utils/auth'
 import { getAddress } from '@/utils'
+import { MessageBox } from 'element-ui'
+import store from '@/store'
 
 export default {
   filters: {
@@ -185,20 +187,29 @@ export default {
       }))
     },
     upgrade() {
-      // todo pop
-      this.socket.send(JSON.stringify({
-        type: 'app',
-        operate: 'upgrade'
-      }))
+      MessageBox.confirm('', 'Confirm upgrade', {
+        confirmButtonText: 'Upgrade',
+        cancelButtonText: 'Cancel',
+        type: 'warning'
+      }).then(() => {
+        this.socket.send(JSON.stringify({
+          type: 'app',
+          operate: 'upgrade'
+        }))
+      })
     },
     reload() {
-      // todo pop
-      this.socket.send(JSON.stringify({
-        type: 'app',
-        operate: 'reload'
-      }))
+      MessageBox.confirm('', 'Confirm reload', {
+        confirmButtonText: 'Reload',
+        cancelButtonText: 'Cancel',
+        type: 'warning'
+      }).then(() => {
+        this.socket.send(JSON.stringify({
+          type: 'app',
+          operate: 'reload'
+        }))
+      })
     }
-
   }
 }
 </script>

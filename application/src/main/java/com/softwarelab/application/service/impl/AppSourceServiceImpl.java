@@ -1,5 +1,6 @@
 package com.softwarelab.application.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.softwarelab.application.bean.AppSourceInfo;
 import com.softwarelab.application.bean.SourceRelease;
@@ -121,7 +122,7 @@ public class AppSourceServiceImpl extends ServiceImpl<AppSourceMapper, AppSource
                 File appFile = new File(appsDir + File.separator + fileName);
                 AppSourceInfo appSourceInfo = objectMapper.readValue(appFile, AppSourceInfo.class);
                 String appName = fileName.split("\\.")[0];
-                appService.save(App.builder()
+                appService.saveOrUpdate(App.builder()
                         .name(appName)
                         .type(appSourceInfo.getType())
                         .description(appSourceInfo.getDescription())
@@ -134,15 +135,24 @@ public class AppSourceServiceImpl extends ServiceImpl<AppSourceMapper, AppSource
                 List<AppSourceInfo.AppSourceVersion> versions = appSourceInfo.getVersions();
                 if (versions != null && versions.size() > 0) {
                     for (AppSourceInfo.AppSourceVersion appSourceVersion : versions) {
-                        appVersionService.save(AppVersion.builder()
+                        QueryWrapper<AppVersion> appVersionWrapper = new QueryWrapper<AppVersion>()
+                                .eq(DbConst.COLUMN_APP_NAME, appName)
+                                .eq(DbConst.COLUMN_VERSION, appSourceVersion.getVersion());
+                        AppVersion existAppVersion = appVersionService.getOne(appVersionWrapper);
+                        AppVersion newAppVersion = AppVersion.builder()
                                 .appName(appName)
                                 .version(appSourceVersion.getVersion())
-                                .additionalInfo(appSourceVersion.getAdditionalInfo() != null ? appSourceVersion.getAdditionalInfo().toString(): null)
+                                .additionalInfo(appSourceVersion.getAdditionalInfo() != null ? appSourceVersion.getAdditionalInfo().toString() : null)
                                 .createTime(now)
                                 .updateTime(now)
                                 .status(DbConst.STATUS_NORMAL)
                                 .downloadStatus(DbConst.DOWNLOAD_STATUS_INIT)
-                                .build());
+                                .build();
+                        if(existAppVersion == null) {
+                            appVersionService.save(newAppVersion);
+                        } else {
+                            appVersionService.update(newAppVersion,appVersionWrapper);
+                        }
                     }
                 }
 
@@ -157,7 +167,7 @@ public class AppSourceServiceImpl extends ServiceImpl<AppSourceMapper, AppSource
             return false;
 
         }
-        appSourceService.save(AppSource.builder()
+        appSourceService.saveOrUpdate(AppSource.builder()
                 .id("00000000-0000-0000-0000-000000000000")
                 //set true version
                 .version(new String(versionContext, StandardCharsets.UTF_8))
