@@ -71,10 +71,13 @@ public class AppSourceServiceImpl extends ServiceImpl<AppSourceMapper, AppSource
 
 
     @Override
-    public boolean upgrade() {
-        AppSource appSource = list().get(0);
-        String forObject = restTemplate.getForObject("https://api.github.com/repos/CodeIsBeatiful/softwarelab-source/releases", String.class);
+    @Transactional
+    public boolean upgrade(){
         try {
+            AppSource appSource = list().get(0);
+            appSource.setStatus(DbConst.APP_SOURCE_UPGRADE);
+            appSourceService.updateById(appSource);
+            String forObject = restTemplate.getForObject("https://api.github.com/repos/CodeIsBeatiful/softwarelab-source/releases", String.class);
             CollectionType collectionType = objectMapper.getTypeFactory().constructCollectionType(List.class, SourceRelease.class);
             List<SourceRelease> list = objectMapper.readValue(forObject, collectionType);
             SourceRelease latestSourceRelease = list.get(0);
@@ -91,9 +94,8 @@ public class AppSourceServiceImpl extends ServiceImpl<AppSourceMapper, AppSource
                     return loadToDb();
                 }
             }
-        } catch (IOException e) {
-            log.error("upgrade apps error", e);
-            return false;
+        } catch (Exception e){
+            throw new RuntimeException(e);
         }
         return true;
     }
@@ -113,12 +115,15 @@ public class AppSourceServiceImpl extends ServiceImpl<AppSourceMapper, AppSource
     }
 
     @Transactional
-    public boolean loadToDb() {
-        LocalDateTime now = LocalDateTime.now();
-        File appsFile = new File(appsDir);
-        String[] fileNames = appsFile.list();
-        for (String fileName : fileNames) {
-            try {
+    public boolean loadToDb(){
+        try {
+            AppSource appSource = list().get(0);
+            appSource.setStatus(DbConst.APP_SOURCE_RELOAD);
+            appSourceService.updateById(appSource);
+            LocalDateTime now = LocalDateTime.now();
+            File appsFile = new File(appsDir);
+            String[] fileNames = appsFile.list();
+            for (String fileName : fileNames) {
                 File appFile = new File(appsDir + File.separator + fileName);
                 AppSourceInfo appSourceInfo = objectMapper.readValue(appFile, AppSourceInfo.class);
                 String appName = fileName.split("\\.")[0];
@@ -155,27 +160,25 @@ public class AppSourceServiceImpl extends ServiceImpl<AppSourceMapper, AppSource
                         }
                     }
                 }
-
-            } catch (IOException e) {
-                log.error("load to db error",e);
-                return false;
             }
-        }
-        byte[] versionContext = FileUtil.getContent(targetDir + File.separator + versionFileName);
-        if (versionContext == null) {
-            log.error("version file can't find");
-            return false;
+            byte[] versionContext = FileUtil.getContent(targetDir + File.separator + versionFileName);
+            if (versionContext == null) {
+                log.error("version file can't find");
+                return false;
 
+            }
+            appSourceService.saveOrUpdate(AppSource.builder()
+                    .id("00000000-0000-0000-0000-000000000000")
+                    //set true version
+                    .version(new String(versionContext, StandardCharsets.UTF_8))
+                    .repository(null)
+                    .createTime(now)
+                    .updateTime(now)
+                    .status(DbConst.STATUS_NORMAL)
+                    .build());
+        } catch (Exception e){
+            throw new RuntimeException(e);
         }
-        appSourceService.saveOrUpdate(AppSource.builder()
-                .id("00000000-0000-0000-0000-000000000000")
-                //set true version
-                .version(new String(versionContext, StandardCharsets.UTF_8))
-                .repository(null)
-                .createTime(now)
-                .updateTime(now)
-                .status(DbConst.STATUS_NORMAL)
-                .build());
         return true;
     }
 }

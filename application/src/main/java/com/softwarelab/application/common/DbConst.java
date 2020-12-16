@@ -2,16 +2,16 @@ package com.softwarelab.application.common;
 
 /**
  * @author black-star
- *
+ * <p>
  * status constant
  */
 public class DbConst {
 
-    public static final String COLUMN_ID="id";
+    public static final String COLUMN_ID = "id";
 
-    public static final String COLUMN_STATUS="status";
+    public static final String COLUMN_STATUS = "status";
 
-    public static final String COLUMN_TYPE="type";
+    public static final String COLUMN_TYPE = "type";
 
     public static final String COLUMN_USER_ID = "user_id";
 
@@ -21,7 +21,6 @@ public class DbConst {
 
     public static final String COLUMN_DOWNLOAD_STATUS = "download_status";
 
-
     public static final int RUNNING_STATUS_START = 1;
 
     public static final int RUNNING_STATUS_STOP = 0;
@@ -29,6 +28,10 @@ public class DbConst {
     public static final int STATUS_DELETE = 1;
 
     public static final int STATUS_NORMAL = 0;
+
+    public static final int APP_SOURCE_RELOAD = 1;
+
+    public static final int APP_SOURCE_UPGRADE = 2;
 
     public static final int DOWNLOAD_STATUS_FINISH = 2;
 
