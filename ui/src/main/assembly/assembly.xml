@@ -12,7 +12,7 @@
 
   <fileSets>
     <fileSet>
-      <directory>dist</directory>
+      <directory>${project.build.outputDirectory}/public</directory>
       <outputDirectory>public</outputDirectory>
       <fileMode>0644</fileMode>
     </fileSet>

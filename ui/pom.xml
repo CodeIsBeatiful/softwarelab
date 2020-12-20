@@ -14,7 +14,7 @@
   <build>
     <resources>
       <resource>
-        <directory>${project.basedir}/dist</directory>
+        <directory>${project.build.outputDirectory}</directory>
       </resource>
     </resources>
     <plugins>
