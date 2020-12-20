@@ -24,7 +24,7 @@
         <executions>
           <execution>
             <id>exec-npm-run-build</id>
-            <phase>compile</phase>
+            <phase>package</phase>
             <goals>
               <goal>exec</goal>
             </goals>

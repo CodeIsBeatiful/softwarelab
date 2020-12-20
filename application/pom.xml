@@ -110,7 +110,7 @@
                             <goal>single</goal>
                         </goals>
                         <configuration>
-                            <finalName>${project.artifactId}</finalName>
+                            <finalName>${pkg.name}</finalName>
                             <!-- This is where we use our shared assembly descriptor -->
                             <descriptors>
                                 <descriptor>src/main/assembly/assembly.xml</descriptor>
