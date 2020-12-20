@@ -12,8 +12,8 @@
 
   <fileSets>
     <fileSet>
-      <directory>${project.build.outputDirectory}/public</directory>
-      <outputDirectory>public</outputDirectory>
+      <directory>${project.build.directory}/generate-resources</directory>
+      <outputDirectory>.</outputDirectory>
       <fileMode>0644</fileMode>
     </fileSet>
   </fileSets>
