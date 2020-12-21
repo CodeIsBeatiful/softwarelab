@@ -54,7 +54,8 @@ Execute start command
 ./path/to/softwarelab/bin/startup.sh
 
 ```
-Open your browser ,enter the address http://ip:8080 and login, you can see a page like this:
+Open your browser ,enter the address `http://ip:8080` and login, you can see a page like this:
+
 ![image](./docs/images/dashboard.png)
 
 
