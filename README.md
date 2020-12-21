@@ -17,7 +17,7 @@ mvn test
 
 * build all
 ```
-mvn clean package
+mvn -DskipTests=true clean package
 ```
 * build backend
 ```
@@ -28,7 +28,6 @@ mvn -DskipTests=true clean package -pl application -am
 cd ui
 npm run build
 ```
-
 
 ## Installation
 
@@ -55,12 +54,15 @@ Execute start command
 ./path/to/softwarelab/bin/startup.sh
 
 ```
+Open your browser ,enter the address http://ip:8080 and login, you can see a page like this:
+![image](./docs/images/dashboard.png)
+
 
 ## Use
 
 Use a browser to open the address `http://ip:8080/`, the default username and password: ʻadmin/123456`
 
-//todo add video
+![image](./docs/images/how_to_use.gif)
 
 ### Restart
 
