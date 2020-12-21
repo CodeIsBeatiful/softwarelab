@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # project name
-APPLICATION="@project.artifactId@"
+APPLICATION="@pkg.name@"
 
 # jar file name
 APPLICATION_JAR="@build.finalName@.jar"

@@ -1,10 +1,14 @@
 #!/bin/sh
 
 # project name
-APPLICATION="@project.artifactId@"
+APPLICATION="@pkg.name@"
 
 # java file name
 APPLICATION_JAR="@build.finalName@.jar"
+
+# bin directory absolute path
+cd `dirname $0`
+cd ..
 
 # stop app
 echo stop ${APPLICATION} Application...

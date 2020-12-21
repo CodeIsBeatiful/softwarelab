@@ -56,6 +56,8 @@ public class AppSourceServiceImpl extends ServiceImpl<AppSourceMapper, AppSource
 
     private int ignoreDepth = 1;
 
+    private static final String APP_SOURCE_ID = "00000000-0000-0000-0000-000000000000";
+
     @Autowired
     private RestTemplate restTemplate;
 
@@ -117,9 +119,11 @@ public class AppSourceServiceImpl extends ServiceImpl<AppSourceMapper, AppSource
     @Transactional
     public boolean loadToDb(){
         try {
-            AppSource appSource = list().get(0);
-            appSource.setStatus(DbConst.APP_SOURCE_RELOAD);
-            appSourceService.updateById(appSource);
+            AppSource appSource = getById(APP_SOURCE_ID);
+            if(appSource != null) {
+                appSource.setStatus(DbConst.APP_SOURCE_RELOAD);
+                appSourceService.updateById(appSource);
+            }
             LocalDateTime now = LocalDateTime.now();
             File appsFile = new File(appsDir);
             String[] fileNames = appsFile.list();
@@ -168,7 +172,7 @@ public class AppSourceServiceImpl extends ServiceImpl<AppSourceMapper, AppSource
 
             }
             appSourceService.saveOrUpdate(AppSource.builder()
-                    .id("00000000-0000-0000-0000-000000000000")
+                    .id(APP_SOURCE_ID)
                     //set true version
                     .version(new String(versionContext, StandardCharsets.UTF_8))
                     .repository(null)
